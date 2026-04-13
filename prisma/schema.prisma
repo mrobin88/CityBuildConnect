@@ -1,0 +1,199 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  WORKER
+  EMPLOYER
+  ADMIN
+}
+
+enum ApplicationStatus {
+  PENDING
+  INTERESTED
+  INTERVIEW
+  OFFER
+  HIRED
+  DECLINED
+  WITHDRAWN
+}
+
+enum JobPostingStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum ProjectType {
+  COMMERCIAL
+  RESIDENTIAL
+  PUBLIC_WORKS
+}
+
+// ——— NextAuth (Prisma adapter) ———
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ——— App ———
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  phone         String?
+  location      String?
+  role          UserRole  @default(WORKER)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  workerProfile     WorkerProfile?
+  employerProfile   EmployerProfile?
+  messagesSent      Message[]       @relation("MessageFrom")
+  messagesReceived  Message[]       @relation("MessageTo")
+}
+
+model WorkerProfile {
+  userId         String    @id
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trade          String
+  apprenticeYear Int?
+  totalHours     Int       @default(0)
+  unionLocal     String?
+  bio            String?   @db.Text
+  availableFrom  DateTime?
+  profilePhoto   String?
+
+  certifications Certification[]
+  applications   Application[]     @relation("WorkerApplications")
+  hoursLogs      HoursLog[]
+}
+
+model Certification {
+  id           String    @id @default(cuid())
+  workerId     String
+  worker       WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  name         String
+  issuingBody  String?
+  issueDate    DateTime?
+  expiryDate   DateTime?
+  documentUrl  String?
+  verified     Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model EmployerProfile {
+  userId        String        @id
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName   String
+  licenseNumber String?
+  projectTypes  ProjectType[]
+  website       String?
+  logo          String?
+
+  jobPostings JobPosting[]
+  hoursLogs   HoursLog[]
+}
+
+model JobPosting {
+  id           String           @id @default(cuid())
+  employerId   String
+  employer     EmployerProfile  @relation(fields: [employerId], references: [userId], onDelete: Cascade)
+  title        String
+  trade        String
+  location     String
+  hoursPerWeek Int?
+  startDate    DateTime?
+  openSlots    Int              @default(1)
+  description  String?          @db.Text
+  status       JobPostingStatus @default(OPEN)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  applications Application[]
+  hoursLogs    HoursLog[]
+}
+
+model Application {
+  id           String              @id @default(cuid())
+  workerId     String
+  worker       WorkerProfile       @relation("WorkerApplications", fields: [workerId], references: [userId], onDelete: Cascade)
+  jobPostingId String
+  jobPosting   JobPosting          @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  status       ApplicationStatus   @default(PENDING)
+  message      String?             @db.Text
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@unique([workerId, jobPostingId])
+}
+
+model HoursLog {
+  id         String           @id @default(cuid())
+  workerId   String
+  worker     WorkerProfile    @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  employerId String
+  employer   EmployerProfile  @relation(fields: [employerId], references: [userId], onDelete: Cascade)
+  jobId      String?
+  job        JobPosting?      @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  date       DateTime
+  hours      Float
+  notes      String?          @db.Text
+  verified   Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  fromId    String
+  from      User     @relation("MessageFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId      String
+  to        User     @relation("MessageTo", fields: [toId], references: [id], onDelete: Cascade)
+  body      String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

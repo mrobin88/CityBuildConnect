@@ -1,0 +1,64 @@
+# Deploy Next.js (standalone) to Azure App Service on push to `main`.
+#
+# Prerequisites (GitHub → Settings → Secrets and variables):
+#   - AZURE_WEBAPP_PUBLISH_PROFILE: contents of the Web App "Download publish profile" file.
+#
+# Prerequisites (GitHub → Settings → Variables):
+#   - AZURE_WEBAPP_NAME: same as the `name` parameter in your ARM Web App (e.g. citybuild-connect).
+#
+# Azure Portal → Web App → Configuration → Application settings (runtime):
+#   - WEBSITE_NODE_DEFAULT_VERSION = ~20 (or match your stack)
+#   - Startup Command: node server.js
+#   - DATABASE_URL, NEXTAUTH_URL, NEXTAUTH_SECRET, OAuth vars, etc.
+#
+# If zip deploy fails with 401/403: your ARM template sets basicPublishingCredentialsPolicies
+# for scm/ftp to allow: false. Either allow SCM basic auth for publish-profile deploy, or
+# switch this workflow to azure/login (OIDC) + webapps-deploy without a publish profile.
+
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20.x"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Prisma does not connect for `generate`; URL must exist for schema parsing.
+      - name: Prisma generate
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
+
+      - name: Assemble standalone package
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .next/standalone
