@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { ApplicationStatus } from "@prisma/client";
 
 export type WorkerJobRow = {
   id: string;
@@ -12,6 +13,7 @@ export type WorkerJobRow = {
   openSlots: number;
   startDateLabel: string | null;
   description: string | null;
+  applicationStatus: ApplicationStatus | null;
 };
 
 type Props = {
@@ -21,13 +23,16 @@ type Props = {
 const PAGE_SIZE = 10;
 
 export function WorkerJobsClient({ jobs }: Props) {
+  const [items, setItems] = useState(jobs);
+  const [busyJobId, setBusyJobId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
-    if (!lower) return jobs;
-    return jobs.filter((j) => {
+    if (!lower) return items;
+    return items.filter((j) => {
       return (
         j.title.toLowerCase().includes(lower) ||
         j.trade.toLowerCase().includes(lower) ||
@@ -35,10 +40,40 @@ export function WorkerJobsClient({ jobs }: Props) {
         j.companyName.toLowerCase().includes(lower)
       );
     });
-  }, [jobs, query]);
+  }, [items, query]);
 
   const visibleJobs = filtered.slice(0, visibleCount);
   const hasMore = visibleJobs.length < filtered.length;
+
+  async function applyToJob(jobId: string) {
+    setError(null);
+    setBusyJobId(jobId);
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/apply`, { method: "POST" });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setError(data.error ?? "Could not apply right now.");
+        return;
+      }
+      setItems((prev) =>
+        prev.map((job) => (job.id === jobId ? { ...job, applicationStatus: "PENDING" } : job))
+      );
+    } catch {
+      setError("Could not apply right now.");
+    } finally {
+      setBusyJobId(null);
+    }
+  }
+
+  function statusLabel(status: ApplicationStatus | null) {
+    if (!status) return null;
+    if (status === "PENDING") return "Applied";
+    return status
+      .toLowerCase()
+      .split("_")
+      .map((part) => part[0]!.toUpperCase() + part.slice(1))
+      .join(" ");
+  }
 
   return (
     <div className="pageStack">
@@ -70,6 +105,11 @@ export function WorkerJobsClient({ jobs }: Props) {
                 placeholder="Search by trade, company, or location..."
               />
             </div>
+            {error ? (
+              <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                <p style={{ fontSize: 12, color: "#b91c1c" }}>{error}</p>
+              </div>
+            ) : null}
 
             {visibleJobs.length === 0 ? (
               <div className="cardBody muted">No jobs match your search yet.</div>
@@ -94,8 +134,17 @@ export function WorkerJobsClient({ jobs }: Props) {
                       </p>
                     ) : null}
                   </div>
-                  <button type="button" className="btnPrimary">
-                    Apply
+                  <button
+                    type="button"
+                    className="btnPrimary"
+                    onClick={() => applyToJob(job.id)}
+                    disabled={Boolean(job.applicationStatus) || busyJobId === job.id}
+                  >
+                    {job.applicationStatus
+                      ? statusLabel(job.applicationStatus)
+                      : busyJobId === job.id
+                        ? "Applying..."
+                        : "Apply"}
                   </button>
                 </div>
               ))

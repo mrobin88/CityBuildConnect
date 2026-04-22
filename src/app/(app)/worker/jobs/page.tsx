@@ -27,6 +27,12 @@ async function WorkerJobsData() {
     take: 80,
   });
 
+  const existingApps = await prisma.application.findMany({
+    where: { workerId: session.user.id },
+    select: { jobPostingId: true, status: true },
+  });
+  const appByJob = new Map(existingApps.map((a) => [a.jobPostingId, a.status]));
+
   const jobs: WorkerJobRow[] = jobsRaw.map((j) => ({
     id: j.id,
     title: j.title,
@@ -37,6 +43,7 @@ async function WorkerJobsData() {
     openSlots: j.openSlots,
     startDateLabel: j.startDate ? j.startDate.toLocaleDateString() : null,
     description: j.description,
+    applicationStatus: appByJob.get(j.id) ?? null,
   }));
 
   return <WorkerJobsClient jobs={jobs} />;
