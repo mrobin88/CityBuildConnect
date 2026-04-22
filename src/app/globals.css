@@ -2,15 +2,15 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --color-background-primary: #ffffff;
-  --color-background-secondary: #f5f6f8;
-  --color-background-tertiary: #eceef2;
+  --color-background-secondary: #f1f4f7;
+  --color-background-tertiary: #e7ebf0;
 
-  --color-border-secondary: #d1d5db;
-  --color-border-tertiary: #e5e7eb;
+  --color-border-secondary: #b8c0cc;
+  --color-border-tertiary: #d5dbe4;
 
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-tertiary: #6b7280;
+  --color-text-primary: #0d1b2a;
+  --color-text-secondary: #223247;
+  --color-text-tertiary: #43556e;
 
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
@@ -67,8 +67,8 @@ a {
 }
 
 .btnPrimary {
-  background: #042c53;
-  color: #b5d4f4;
+  background: #063b72;
+  color: #ffffff;
   border: none;
   border-radius: var(--border-radius-md);
   padding: 7px 14px;
@@ -76,6 +76,7 @@ a {
   cursor: pointer;
   font-weight: 500;
   font-family: inherit;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .btnPrimary:disabled {
@@ -83,15 +84,26 @@ a {
   cursor: not-allowed;
 }
 
+.btnPrimary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
 .btnSecondary {
-  background: transparent;
-  border: 0.5px solid var(--color-border-secondary);
+  background: #ffffff;
+  border: 1px solid var(--color-border-secondary);
   border-radius: var(--border-radius-md);
   padding: 7px 14px;
   font-size: 12px;
   cursor: pointer;
   color: var(--color-text-secondary);
   font-family: inherit;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btnSecondary:hover {
+  background: var(--color-background-secondary);
+  transform: translateY(-1px);
 }
 
 .content {
@@ -131,8 +143,9 @@ a {
 .card {
   background: var(--color-background-primary);
   border-radius: var(--border-radius-lg);
-  border: 0.5px solid var(--color-border-tertiary);
+  border: 1px solid var(--color-border-tertiary);
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(4, 44, 83, 0.06);
 }
 
 .cardHeader {
@@ -199,6 +212,14 @@ a {
 .workerCardInteractive:hover {
   background: var(--color-background-secondary);
   cursor: pointer;
+}
+
+.workerCardInteractive {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.workerCardInteractive:hover {
+  transform: translateY(-1px);
 }
 
 .avatar {
@@ -417,9 +438,32 @@ a {
   color: var(--color-text-tertiary);
 }
 
+.inputField {
+  width: 100%;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background: #fff;
+}
+
+.inputField:focus {
+  outline: 2px solid #0b5fb3;
+  outline-offset: 1px;
+}
+
 .pageStack {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btnPrimary,
+  .btnSecondary,
+  .workerCardInteractive {
+    transition: none;
+  }
 }

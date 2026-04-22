@@ -36,6 +36,7 @@ type Props = {
 };
 
 const AVATAR_CLASS = ["avBlue", "avTeal", "avAmber", "avPurple"] as const;
+const PAGE_SIZE = 12;
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -46,11 +47,27 @@ function initials(name: string | null): string {
 
 export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Props) {
   const [trade, setTrade] = useState("All trades");
+  const [query, setQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const filtered = useMemo(() => {
-    if (trade === "All trades") return workers;
-    return workers.filter((w) => w.trade.toLowerCase() === trade.toLowerCase());
-  }, [workers, trade]);
+    const lower = query.trim().toLowerCase();
+    return workers.filter((w) => {
+      const tradeMatch = trade === "All trades" || w.trade.toLowerCase() === trade.toLowerCase();
+      if (!tradeMatch) return false;
+      if (!lower) return true;
+      const certMatch = w.certNames.some((c) => c.toLowerCase().includes(lower));
+      return (
+        (w.name ?? "").toLowerCase().includes(lower) ||
+        w.trade.toLowerCase().includes(lower) ||
+        certMatch
+      );
+    });
+  }, [workers, trade, query]);
+
+  const visibleWorkers = filtered.slice(0, visibleCount);
+  const hasMoreWorkers = visibleWorkers.length < filtered.length;
+  const featuredWorker = visibleWorkers[0];
 
   return (
     <div className="pageStack">
@@ -66,7 +83,13 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
         </div>
       </header>
 
-      <TradeFilterChips active={trade} onChange={setTrade} />
+      <TradeFilterChips
+        active={trade}
+        onChange={(next) => {
+          setTrade(next);
+          setVisibleCount(PAGE_SIZE);
+        }}
+      />
 
       <div className="content">
         <div className="colMain">
@@ -88,15 +111,63 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
             </div>
           </div>
 
+          {featuredWorker ? (
+            <div className="card">
+              <div className="cardHeader">
+                <span className="cardTitle">Featured candidate</span>
+                <span className="muted">Quick view for fast matching</span>
+              </div>
+              <div className="cardBody" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div className={`avatar ${AVATAR_CLASS[0]}`} style={{ width: 48, height: 48 }}>
+                  {initials(featuredWorker.name)}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div className="workerName" style={{ fontSize: 15 }}>
+                    {featuredWorker.name ?? "Worker"}
+                  </div>
+                  <div className="workerTrade" style={{ marginTop: 2 }}>
+                    {featuredWorker.trade}
+                    {featuredWorker.apprenticeYear != null ? ` · Year ${featuredWorker.apprenticeYear}` : ""}
+                    {" · "}
+                    {featuredWorker.totalHours.toLocaleString()} hours
+                  </div>
+                  <div className="workerMeta" style={{ marginTop: 6 }}>
+                    <span className="tag tagGreen">Available now</span>
+                    {featuredWorker.certNames.slice(0, 2).map((c) => (
+                      <span key={c} className="tag tagBlue">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button type="button" className="btnPrimary">
+                  View profile
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <div className="card">
             <div className="cardHeader">
               <span className="cardTitle">Apprentice roster</span>
-              <span className="muted">Sorted by availability</span>
+              <span className="muted">{filtered.length} results</span>
+            </div>
+            <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setVisibleCount(PAGE_SIZE);
+                }}
+                placeholder="Search by name, trade, or cert..."
+                className="inputField"
+              />
             </div>
             {filtered.length === 0 ? (
               <div className="cardBody muted">No workers match this trade yet.</div>
             ) : (
-              filtered.map((w, i) => (
+              visibleWorkers.map((w, i) => (
                 <div key={w.userId} className="workerCard workerCardInteractive">
                   <div className={`avatar ${AVATAR_CLASS[i % AVATAR_CLASS.length]}`}>{initials(w.name)}</div>
                   <div className="workerInfo">
@@ -121,6 +192,13 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                 </div>
               ))
             )}
+            {hasMoreWorkers ? (
+              <div className="cardBody" style={{ borderTop: "0.5px solid var(--color-border-tertiary)" }}>
+                <button type="button" className="btnSecondary" style={{ width: "100%" }} onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}>
+                  Load more candidates
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -130,6 +208,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
               <span className="cardTitle">Active job openings</span>
             </div>
             <div className="cardBody" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {jobs.length === 0 ? <div className="muted">No open roles yet.</div> : null}
               {jobs.map((j) => (
                 <div key={j.id} className="jobItem">
                   <div className="jobTitle">{j.title}</div>

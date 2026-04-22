@@ -56,6 +56,7 @@ export default async function WorkerProfilePage() {
           <div className="card">
             <div className="cardHeader">
               <span className="cardTitle">Digital resume</span>
+              <span className="tag tagGreen">CityBuild graduate profile</span>
             </div>
             <div className="cardBody" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div className="avatar avBlue" style={{ width: 56, height: 56, fontSize: 18 }}>
@@ -85,6 +86,15 @@ export default async function WorkerProfilePage() {
                     {profile.bio}
                   </p>
                 ) : null}
+                <div className="workerMeta" style={{ marginTop: 8 }}>
+                  <span className="tag tagBlue">Pre-apprenticeship pathway</span>
+                  <span className="tag tagGreen">Ready for placement</span>
+                  {profile.availableFrom ? (
+                    <span className="tag tagAmber">
+                      Available {profile.availableFrom.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
@@ -139,6 +149,9 @@ export default async function WorkerProfilePage() {
                   );
                 })
               )}
+              <button type="button" className="btnSecondary" style={{ width: "100%", marginTop: 8 }}>
+                Add certification
+              </button>
             </div>
           </div>
         </div>
