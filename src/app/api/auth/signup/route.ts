@@ -83,7 +83,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "Unable to create account right now." }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("signup_error", error);
+    return NextResponse.json({ error: `Unable to create account right now. ${message}` }, { status: 500 });
   }
 }
