@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -29,7 +30,14 @@ export default async function WorkerProfilePage() {
           <h1 className="pageTitle">Worker profile</h1>
         </header>
         <div className="content">
-          <div className="cardBody muted">No worker profile yet. Complete onboarding (coming soon).</div>
+          <div className="card">
+            <div className="cardBody" style={{ display: "grid", gap: 10 }}>
+              <p className="muted">No worker profile yet. Set up your trade profile to start applying to jobs.</p>
+              <Link href="/worker/profile/setup" className="btnPrimary" style={{ width: "fit-content" }}>
+                Create profile
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
