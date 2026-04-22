@@ -5,8 +5,46 @@ import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+import { verifyPassword } from "@/lib/password";
 
 const providers: NextAuthOptions["providers"] = [];
+
+providers.push(
+  CredentialsProvider({
+    id: "password",
+    name: "Email and password",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" },
+    },
+    async authorize(credentials) {
+      const email = credentials?.email?.toLowerCase().trim();
+      const password = credentials?.password;
+      if (!email || !password) return null;
+
+      const account = await prisma.account.findUnique({
+        where: {
+          provider_providerAccountId: {
+            provider: "credentials",
+            providerAccountId: email,
+          },
+        },
+        include: { user: true },
+      });
+
+      if (!account?.access_token) return null;
+      if (!verifyPassword(password, account.access_token)) return null;
+
+      return {
+        id: account.user.id,
+        email: account.user.email,
+        name: account.user.name,
+        image: account.user.image,
+        role: account.user.role,
+      };
+    },
+  })
+);
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(

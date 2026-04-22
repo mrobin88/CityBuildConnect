@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:init": "npm run db:up && prisma db push && prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
