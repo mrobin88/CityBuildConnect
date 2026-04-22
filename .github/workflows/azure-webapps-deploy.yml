@@ -54,7 +54,9 @@ jobs:
       - name: Assemble standalone package
         run: |
           cp -r .next/static .next/standalone/.next/static
-          cp -r public .next/standalone/public
+          if [ -d public ]; then
+            cp -r public .next/standalone/public
+          fi
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
