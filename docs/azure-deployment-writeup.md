@@ -63,13 +63,14 @@ Required GitHub repository settings:
 
 - **Secrets**
   - `AZURE_WEBAPP_PUBLISH_PROFILE`
+  - `PROD_DATABASE_URL` (used by CI for `prisma migrate deploy`)
 
 - **Variables**
   - `AZURE_WEBAPP_NAME`
 
 Notes:
 
-- Current workflow builds with Node 20, runs `prisma generate`, builds Next.js, and deploys `.next/standalone`.
+- Current workflow builds with Node 20, runs `prisma migrate deploy` against `PROD_DATABASE_URL`, runs `prisma generate`, builds Next.js, and deploys `.next/standalone`.
 - If you switch to OIDC later, replace publish-profile auth with `azure/login` + federated credentials.
 
 ## 6) App Service Configuration (Environment Variables)
@@ -103,6 +104,8 @@ Optional now / required when feature enabled:
 ## 7) Database and Migration Policy
 
 - Use Prisma migrations for schema evolution (`npm run db:migrate`) in controlled deployment windows.
+- Production deploy automation runs `npm run db:deploy` (`prisma migrate deploy`) before app deployment.
+- Do **not** use `prisma db push` in production.
 - Keep production credentials only in Key Vault (not in repository secrets/files).
 - Validate schema compatibility in dev/staging before prod promotion.
 
