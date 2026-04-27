@@ -28,11 +28,13 @@ export function WorkerJobsClient({ jobs }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [appliedOnly, setAppliedOnly] = useState(false);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
-    if (!lower) return items;
     return items.filter((j) => {
+      if (appliedOnly && !j.applicationStatus) return false;
+      if (!lower) return true;
       return (
         j.title.toLowerCase().includes(lower) ||
         j.trade.toLowerCase().includes(lower) ||
@@ -40,7 +42,7 @@ export function WorkerJobsClient({ jobs }: Props) {
         j.companyName.toLowerCase().includes(lower)
       );
     });
-  }, [items, query]);
+  }, [items, query, appliedOnly]);
 
   const visibleJobs = filtered.slice(0, visibleCount);
   const hasMore = visibleJobs.length < filtered.length;
@@ -80,8 +82,15 @@ export function WorkerJobsClient({ jobs }: Props) {
       <header className="topbar">
         <h1 className="pageTitle">Open jobs</h1>
         <div className="topbarActions">
-          <button type="button" className="btnSecondary">
-            Saved jobs
+          <button
+            type="button"
+            className={`btnSecondary ${appliedOnly ? "btnSecondaryActive" : ""}`}
+            onClick={() => {
+              setAppliedOnly((v) => !v);
+              setVisibleCount(PAGE_SIZE);
+            }}
+          >
+            {appliedOnly ? "All jobs" : "My applications"}
           </button>
         </div>
       </header>

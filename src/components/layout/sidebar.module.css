@@ -1,6 +1,6 @@
 .sidebar {
   width: 220px;
-  background: var(--color-background-primary);
+  background: #f3f1ea;
   border-right: 0.5px solid var(--color-border-tertiary);
   display: flex;
   flex-direction: column;
@@ -13,8 +13,9 @@
 }
 
 .logoMark {
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 18px;
+  font-family: var(--font-serif);
+  font-weight: 700;
   color: var(--color-text-primary);
 }
 
@@ -27,7 +28,7 @@
 .roleBadge {
   margin: 10px 12px;
   padding: 8px 10px;
-  background: var(--color-background-secondary);
+  background: #fff;
   border-radius: var(--border-radius-md);
   border: 0.5px solid var(--color-border-tertiary);
 }
@@ -83,8 +84,8 @@
 }
 
 .navItemActive {
-  background: #e6f1fb;
-  color: #0c447c;
+  background: #fff;
+  color: var(--color-accent-strong);
   font-weight: 500;
 }
 

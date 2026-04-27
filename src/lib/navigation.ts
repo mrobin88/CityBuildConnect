@@ -33,6 +33,10 @@ const employerNav: NavSection[] = [
     ],
   },
   {
+    heading: "Connect",
+    items: [{ href: "/employer/messages", label: "Messages", icon: "💬" }],
+  },
+  {
     heading: "Manage",
     items: [
       { href: "/employer/crew", label: "Active crew", icon: "👷" },

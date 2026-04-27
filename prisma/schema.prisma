@@ -106,9 +106,49 @@ model WorkerProfile {
   availableFrom  DateTime?
   profilePhoto   String?
 
-  certifications Certification[]
-  applications   Application[]     @relation("WorkerApplications")
-  hoursLogs      HoursLog[]
+  certifications   Certification[]
+  applications     Application[]       @relation("WorkerApplications")
+  hoursLogs        HoursLog[]
+  jobSiteExperiences JobSiteExperience[]
+  portfolioItems   PortfolioItem[]
+}
+
+/// Job sites / projects the worker has been on (resume-style).
+model JobSiteExperience {
+  id            String   @id @default(cuid())
+  workerId      String
+  worker        WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  projectName   String
+  location      String?
+  companyName   String?
+  roleOnSite    String?
+  startDate     DateTime?
+  endDate       DateTime?
+  notes         String?  @db.Text
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  portfolioItems PortfolioItem[]
+
+  @@index([workerId, sortOrder])
+}
+
+/// Photos / descriptions of work for employer-facing portfolio.
+model PortfolioItem {
+  id           String   @id @default(cuid())
+  workerId     String
+  worker       WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  workSiteId   String?
+  workSite     JobSiteExperience? @relation(fields: [workSiteId], references: [id], onDelete: SetNull)
+  title        String
+  description  String?  @db.Text
+  imageUrl     String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([workerId, sortOrder])
 }
 
 model Certification {
@@ -196,4 +236,8 @@ model Message {
   body      String   @db.Text
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([fromId, createdAt])
+  @@index([toId, createdAt])
+  @@index([toId, read])
 }

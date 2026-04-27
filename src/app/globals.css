@@ -1,20 +1,23 @@
 :root {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
 
   --color-background-primary: #ffffff;
-  --color-background-secondary: #f1f4f7;
-  --color-background-tertiary: #e7ebf0;
+  --color-background-secondary: #f7f7f4;
+  --color-background-tertiary: #efeee9;
 
-  --color-border-secondary: #b8c0cc;
-  --color-border-tertiary: #d5dbe4;
+  --color-border-secondary: #cbc9bd;
+  --color-border-tertiary: #dfddd1;
 
-  --color-text-primary: #0d1b2a;
-  --color-text-secondary: #223247;
-  --color-text-tertiary: #43556e;
+  --color-text-primary: #24211a;
+  --color-text-secondary: #4f4a3f;
+  --color-text-tertiary: #746f63;
+  --color-accent: #d33a2c;
+  --color-accent-strong: #b92e22;
 
   --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
 }
 
 * {
@@ -38,14 +41,14 @@ body {
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: var(--color-accent-strong);
+  text-underline-offset: 2px;
 }
 
 /* ——— Shared layout (mockup-aligned) ——— */
 
 .topbar {
-  padding: 14px 20px;
+  padding: 18px 22px;
   border-bottom: 0.5px solid var(--color-border-tertiary);
   background: var(--color-background-primary);
   display: flex;
@@ -55,8 +58,10 @@ a {
 }
 
 .pageTitle {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 24px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--color-text-primary);
 }
 
@@ -67,16 +72,20 @@ a {
 }
 
 .btnPrimary {
-  background: #063b72;
+  background: var(--color-accent);
   color: #ffffff;
   border: none;
-  border-radius: var(--border-radius-md);
-  padding: 7px 14px;
+  border-radius: 999px;
+  padding: 8px 14px;
   font-size: 12px;
   cursor: pointer;
   font-weight: 500;
   font-family: inherit;
   transition: transform 0.15s ease, filter 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btnPrimary:disabled {
@@ -85,25 +94,212 @@ a {
 }
 
 .btnPrimary:hover {
-  filter: brightness(1.05);
+  background: var(--color-accent-strong);
   transform: translateY(-1px);
 }
 
 .btnSecondary {
   background: #ffffff;
   border: 1px solid var(--color-border-secondary);
-  border-radius: var(--border-radius-md);
-  padding: 7px 14px;
+  border-radius: 999px;
+  padding: 8px 14px;
   font-size: 12px;
   cursor: pointer;
   color: var(--color-text-secondary);
   font-family: inherit;
   transition: transform 0.15s ease, background-color 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btnSecondary:hover {
   background: var(--color-background-secondary);
   transform: translateY(-1px);
+}
+
+.btnSecondaryActive {
+  background: var(--color-text-primary);
+  border-color: var(--color-text-primary);
+  color: #fff;
+}
+
+/* Marketing + auth surfaces */
+
+.marketingShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(211, 58, 44, 0.08), transparent 24%),
+    radial-gradient(circle at 92% 20%, rgba(36, 33, 26, 0.08), transparent 20%),
+    var(--color-background-tertiary);
+  display: flex;
+  flex-direction: column;
+}
+
+.marketingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.marketingBrand {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.marketingSub {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
+
+.marketingMain {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+.marketingHero {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 28px;
+  box-shadow: 0 8px 18px rgba(45, 40, 32, 0.06);
+}
+
+.marketingKicker {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 11px;
+}
+
+.marketingTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 5vw, 54px);
+  line-height: 1.05;
+  margin: 10px 0 12px;
+  max-width: 900px;
+}
+
+.marketingLead {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  max-width: 760px;
+  margin-bottom: 18px;
+}
+
+.marketingActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.marketingGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.marketingCard {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 18px 16px;
+}
+
+.marketingCard h2 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.marketingCard p {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.authShell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(211, 58, 44, 0.08), transparent 18%),
+    radial-gradient(circle at 100% 100%, rgba(36, 33, 26, 0.06), transparent 22%),
+    var(--color-background-tertiary);
+}
+
+.authCard {
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  box-shadow: 0 8px 18px rgba(45, 40, 32, 0.06);
+}
+
+.authBackLink {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.authTitle {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  line-height: 1.06;
+}
+
+.authLead {
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.authLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.authSection {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-tertiary);
+}
+
+.formError {
+  font-size: 12px;
+  color: #b91c1c;
+  margin-top: 12px;
+}
+
+.formSuccess {
+  font-size: 12px;
+  color: #166534;
 }
 
 .content {
@@ -138,6 +334,10 @@ a {
   .colSide {
     width: 100%;
   }
+
+  .marketingGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -145,7 +345,7 @@ a {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border-tertiary);
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(4, 44, 83, 0.06);
+  box-shadow: 0 4px 14px rgba(45, 40, 32, 0.05);
 }
 
 .cardHeader {
@@ -157,8 +357,8 @@ a {
 }
 
 .cardTitle {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
@@ -192,7 +392,7 @@ a {
 
 .statDelta {
   font-size: 10px;
-  color: #3b6d11;
+  color: #56723f;
   margin-top: 2px;
 }
 
@@ -458,6 +658,323 @@ a {
   flex-direction: column;
   flex: 1;
   min-height: 0;
+}
+
+.certUploadInput {
+  padding: 8px 10px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+}
+
+.certUploadInput:focus {
+  outline: 2px solid #185fa5;
+  outline-offset: 1px;
+}
+
+.certDocLink {
+  font-size: 11px;
+  color: #185fa5;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ——— LinkedIn-style messages ——— */
+
+.msgSplit {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.msgSidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--color-background-primary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.msgSidebarHeader {
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.msgPad {
+  padding: 12px 14px;
+}
+
+.msgConvList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.msgConvItem {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.msgConvItem:hover {
+  background: var(--color-background-secondary);
+}
+
+.msgConvItemActive {
+  background: #e6f1fb;
+}
+
+.msgConvName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.msgUnreadBadge {
+  font-size: 10px;
+  font-weight: 600;
+  background: #042c53;
+  color: #b5d4f4;
+  border-radius: 10px;
+  padding: 2px 7px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.msgConvPreview {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msgConvTime {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
+
+.msgThreadPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--color-background-secondary);
+}
+
+.msgThreadHeader {
+  padding: 12px 16px;
+  background: var(--color-background-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.msgBubbleList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msgRow {
+  display: flex;
+}
+
+.msgRowSent {
+  justify-content: flex-end;
+}
+
+.msgRowRecv {
+  justify-content: flex-start;
+}
+
+.msgBubble {
+  max-width: min(520px, 85%);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.msgBubbleSent {
+  background: #042c53;
+  color: #e8f1fb;
+}
+
+.msgBubbleRecv {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+}
+
+.msgBubbleText {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msgBubbleMeta {
+  font-size: 10px;
+  margin-top: 6px;
+  opacity: 0.75;
+}
+
+.msgComposer {
+  padding: 12px 16px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.msgTextarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 72px;
+  max-height: 200px;
+  padding: 10px 12px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.msgTextarea:focus {
+  outline: 2px solid #185fa5;
+  outline-offset: 1px;
+}
+
+@media (max-width: 768px) {
+  .msgSplit {
+    flex-direction: column;
+  }
+
+  .msgSidebar {
+    width: 100%;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+}
+
+/* ——— Job sites & portfolio (worker profile) ——— */
+
+.jobSiteList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jobSiteCard {
+  padding: 12px 14px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+}
+
+.jobSiteAddForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.portfolioLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.portfolioTwoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 520px) {
+  .portfolioTwoCol {
+    grid-template-columns: 1fr;
+  }
+}
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.portfolioCard {
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.portfolioThumb {
+  aspect-ratio: 4 / 3;
+  background: var(--color-background-secondary);
+  position: relative;
+}
+
+.portfolioImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.portfolioPlaceholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.portfolioCardBody {
+  padding: 12px 14px 14px;
+}
+
+.portfolioFileRow {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.portfolioFileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 @media (prefers-reduced-motion: reduce) {

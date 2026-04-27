@@ -235,7 +235,7 @@ export function EmployerPostingsClient({ postings }: Props) {
         </div>
 
         <div className="colSide">
-          <div className="card">
+          <div className="card" id="new-posting">
             <div className="cardHeader">
               <span className="cardTitle">Create opening</span>
             </div>

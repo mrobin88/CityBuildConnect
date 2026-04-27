@@ -3,10 +3,10 @@ import { MessagesInbox } from "@/components/messages/messages-inbox";
 
 export const dynamic = "force-dynamic";
 
-export default function WorkerMessagesPage() {
+export default function EmployerMessagesPage() {
   return (
     <Suspense fallback={<div className="pageStack muted msgPad">Loading messages…</div>}>
-      <MessagesInbox basePath="/worker/messages" />
+      <MessagesInbox basePath="/employer/messages" />
     </Suspense>
   );
 }

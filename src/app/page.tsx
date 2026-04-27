@@ -13,26 +13,54 @@ export default async function HomePage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <header
-        style={{
-          padding: "20px 24px",
-          borderBottom: "0.5px solid var(--color-border-tertiary)",
-          background: "var(--color-background-primary)",
-        }}
-      >
-        <div style={{ fontWeight: 600, fontSize: 18 }}>CityBuild Connect</div>
-        <div style={{ fontSize: 12, color: "var(--color-text-tertiary)", marginTop: 2 }}>Mission Hiring Hall</div>
+    <div className="marketingShell">
+      <header className="marketingHeader">
+        <div>
+          <div className="marketingBrand">CityBuild Connect</div>
+          <div className="marketingSub">Mission Hiring Hall</div>
+        </div>
+        <div className="marketingActions">
+          <Link className="btnSecondary" href="/signup">
+            Create account
+          </Link>
+          <Link className="btnPrimary" href="/login">
+            Sign in
+          </Link>
+        </div>
       </header>
-      <main style={{ flex: 1, padding: "32px 24px", maxWidth: 560 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 12 }}>Trades apprenticeship placement</h1>
-        <p className="muted" style={{ lineHeight: 1.5, marginBottom: 20 }}>
-          A LinkedIn-style hub for workers, contractors, and hall staff—profiles, cert wallet, browse & match, and
-          hours tracking.
-        </p>
-        <Link className="btnPrimary" href="/login" style={{ display: "inline-block" }}>
-          Sign in
-        </Link>
+
+      <main className="marketingMain">
+        <section className="marketingHero">
+          <p className="marketingKicker">Union workforce platform</p>
+          <h1 className="marketingTitle">Connect skilled workers with the right job site, faster.</h1>
+          <p className="marketingLead">
+            CityBuild Connect gives employers a focused talent pipeline and gives workers a portable profile with certs,
+            hours, portfolio, and messaging.
+          </p>
+          <div className="marketingActions">
+            <Link className="btnPrimary" href="/signup">
+              Get started
+            </Link>
+            <Link className="btnSecondary" href="/login">
+              I already have an account
+            </Link>
+          </div>
+        </section>
+
+        <section className="marketingGrid">
+          <article className="marketingCard">
+            <h2>For employers</h2>
+            <p>Post openings, browse candidate profiles, message workers, and manage applicant pipelines.</p>
+          </article>
+          <article className="marketingCard">
+            <h2>For workers</h2>
+            <p>Build a resume with trade history, cert wallet, project portfolio, and verified hours progress.</p>
+          </article>
+          <article className="marketingCard">
+            <h2>For hiring halls</h2>
+            <p>Coordinate placements with role-based access, compliance visibility, and standardized records.</p>
+          </article>
+        </section>
       </main>
     </div>
   );

@@ -5,6 +5,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { certExpiryStatus } from "@/lib/cert-status";
 import { defaultHomeForRole } from "@/lib/routes";
+import { CertUploadForm } from "@/components/worker/cert-upload-form";
+import { JobSitesManager, type JobSiteRow } from "@/components/worker/job-sites-manager";
+import { PortfolioManager, type PortfolioRow } from "@/components/worker/portfolio-manager";
+import { ShareProfileButton } from "@/components/worker/share-profile-button";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +24,11 @@ export default async function WorkerProfilePage() {
     include: {
       user: true,
       certifications: { orderBy: { expiryDate: "asc" } },
+      jobSiteExperiences: { orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }] },
+      portfolioItems: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        include: { workSite: { select: { id: true, projectName: true } } },
+      },
     },
   });
 
@@ -45,17 +54,39 @@ export default async function WorkerProfilePage() {
 
   const pct = Math.min(100, Math.round((profile.totalHours / JOURNEY_HOURS_TARGET) * 100));
 
+  const jobSitesPayload: JobSiteRow[] = profile.jobSiteExperiences.map((j) => ({
+    id: j.id,
+    projectName: j.projectName,
+    location: j.location,
+    companyName: j.companyName,
+    roleOnSite: j.roleOnSite,
+    startDate: j.startDate?.toISOString() ?? null,
+    endDate: j.endDate?.toISOString() ?? null,
+    notes: j.notes,
+    sortOrder: j.sortOrder,
+  }));
+
+  const portfolioPayload: PortfolioRow[] = profile.portfolioItems.map((p) => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    hasImage: Boolean(p.imageUrl),
+    workSiteId: p.workSiteId,
+    workSiteName: p.workSite?.projectName ?? null,
+    sortOrder: p.sortOrder,
+  }));
+
+  const jobSiteOptions = profile.jobSiteExperiences.map((j) => ({ id: j.id, projectName: j.projectName }));
+
   return (
     <div className="pageStack">
       <header className="topbar">
         <h1 className="pageTitle">Your profile</h1>
         <div className="topbarActions">
-          <button type="button" className="btnSecondary">
+          <Link href="/worker/profile/setup" className="btnSecondary">
             Edit
-          </button>
-          <button type="button" className="btnPrimary">
-            Share profile
-          </button>
+          </Link>
+          <ShareProfileButton profileUrl={`/profiles/${session.user.id}`} />
         </div>
       </header>
 
@@ -122,6 +153,26 @@ export default async function WorkerProfilePage() {
               </div>
             </div>
           </div>
+
+          <div className="card">
+            <div className="cardHeader">
+              <span className="cardTitle">Job sites & projects</span>
+              <span className="muted">Where you&apos;ve worked</span>
+            </div>
+            <div className="cardBody">
+              <JobSitesManager initialSites={jobSitesPayload} />
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="cardHeader">
+              <span className="cardTitle">Portfolio</span>
+              <span className="muted">Show your best work</span>
+            </div>
+            <div className="cardBody">
+              <PortfolioManager initialItems={portfolioPayload} jobSites={jobSiteOptions} />
+            </div>
+          </div>
         </div>
 
         <div className="colSide">
@@ -141,9 +192,19 @@ export default async function WorkerProfilePage() {
                   return (
                     <div key={c.id} className="certItem">
                       <div className="certIcon">🪪</div>
-                      <div>
+                      <div style={{ minWidth: 0 }}>
                         <div className="certName">{c.name}</div>
                         <div className="certExp">{exp}</div>
+                        {c.documentUrl ? (
+                          <a
+                            className="certDocLink"
+                            href={`/api/worker/certifications/${c.id}/file`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View uploaded file
+                          </a>
+                        ) : null}
                         {c.verified ? (
                           <div className="muted" style={{ marginTop: 2 }}>
                             Verified
@@ -157,9 +218,7 @@ export default async function WorkerProfilePage() {
                   );
                 })
               )}
-              <button type="button" className="btnSecondary" style={{ width: "100%", marginTop: 8 }}>
-                Add certification
-              </button>
+              <CertUploadForm />
             </div>
           </div>
         </div>

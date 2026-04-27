@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TradeFilterChips } from "@/components/employer/trade-filter-chips";
 
 export type BrowseWorkerRow = {
@@ -46,9 +48,11 @@ function initials(name: string | null): string {
 }
 
 export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Props) {
+  const router = useRouter();
   const [trade, setTrade] = useState("All trades");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
@@ -74,12 +78,12 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
       <header className="topbar">
         <h1 className="pageTitle">Browse apprentices</h1>
         <div className="topbarActions">
-          <button type="button" className="btnSecondary">
+          <button type="button" className="btnSecondary" onClick={() => searchRef.current?.focus()}>
             Filter
           </button>
-          <button type="button" className="btnPrimary">
+          <Link href="/employer/postings#new-posting" className="btnPrimary">
             + Post opening
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -140,9 +144,22 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                     ))}
                   </div>
                 </div>
-                <button type="button" className="btnPrimary">
-                  View profile
-                </button>
+                <div style={{ display: "flex", gap: 8, flexShrink: 0, flexWrap: "wrap" }}>
+                  <Link
+                    href={`/employer/messages?with=${encodeURIComponent(featuredWorker.userId)}`}
+                    className="btnSecondary"
+                    style={{ fontSize: 12, padding: "7px 12px", textDecoration: "none", textAlign: "center" }}
+                  >
+                    Message
+                  </Link>
+                  <Link
+                    href={`/profiles/${encodeURIComponent(featuredWorker.userId)}`}
+                    className="btnSecondary"
+                    style={{ fontSize: 12, padding: "7px 12px", textDecoration: "none", textAlign: "center" }}
+                  >
+                    View profile
+                  </Link>
+                </div>
               </div>
             </div>
           ) : null}
@@ -154,6 +171,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
             </div>
             <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
               <input
+                ref={searchRef}
                 type="search"
                 value={query}
                 onChange={(e) => {
@@ -168,7 +186,19 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
               <div className="cardBody muted">No workers match this trade yet.</div>
             ) : (
               visibleWorkers.map((w, i) => (
-                <div key={w.userId} className="workerCard workerCardInteractive">
+                <div
+                  key={w.userId}
+                  className="workerCard workerCardInteractive"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/profiles/${encodeURIComponent(w.userId)}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/profiles/${encodeURIComponent(w.userId)}`);
+                    }
+                  }}
+                >
                   <div className={`avatar ${AVATAR_CLASS[i % AVATAR_CLASS.length]}`}>{initials(w.name)}</div>
                   <div className="workerInfo">
                     <div className="workerName">{w.name ?? "Worker"}</div>
@@ -185,9 +215,27 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                       ))}
                     </div>
                   </div>
-                  <div className="workerHours">
-                    <div className="hoursNum">{w.totalHours.toLocaleString()}</div>
-                    <div>hrs logged</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      gap: 8,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div className="workerHours">
+                      <div className="hoursNum">{w.totalHours.toLocaleString()}</div>
+                      <div>hrs logged</div>
+                    </div>
+                    <Link
+                      href={`/employer/messages?with=${encodeURIComponent(w.userId)}`}
+                      className="btnSecondary"
+                      style={{ fontSize: 11, padding: "5px 10px", textDecoration: "none", textAlign: "center" }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Message
+                    </Link>
                   </div>
                 </div>
               ))

@@ -124,36 +124,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: 24 }}>
-      <div style={{ width: "100%", maxWidth: 400, marginTop: 48 }}>
-        <Link href="/" style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+    <div className="authShell">
+      <div className="authCard">
+        <Link href="/" className="authBackLink">
           ← Back
         </Link>
-        <h1 style={{ fontSize: 22, fontWeight: 600, marginTop: 16, marginBottom: 8 }}>Sign in</h1>
-        <p className="muted" style={{ fontSize: 13, marginBottom: 20, lineHeight: 1.45 }}>
+        <h1 className="authTitle">Sign in</h1>
+        <p className="muted authLead">
           Use email and password to sign in. You can also request an email magic link when it is configured.
         </p>
 
         {passwordAvailable ? (
-          <form onSubmit={handlePasswordSignIn} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Email</span>
+          <form onSubmit={handlePasswordSignIn} className="authForm">
+            <label className="authLabel">
+              <span>Email</span>
               <input
                 type="email"
                 value={passwordEmail}
                 onChange={(e) => setPasswordEmail(e.target.value)}
                 placeholder="you@company.org"
                 required
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: "var(--border-radius-md)",
-                  border: "0.5px solid var(--color-border-tertiary)",
-                  fontSize: 14,
-                }}
+                className="inputField"
               />
             </label>
-            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Password</span>
+            <label className="authLabel">
+              <span>Password</span>
               <input
                 type="password"
                 value={password}
@@ -161,12 +156,7 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 required
                 minLength={8}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: "var(--border-radius-md)",
-                  border: "0.5px solid var(--color-border-tertiary)",
-                  fontSize: 14,
-                }}
+                className="inputField"
               />
             </label>
             <button type="submit" className="btnPrimary" disabled={loading}>
@@ -179,27 +169,22 @@ export default function LoginPage() {
         ) : null}
 
         {error ? (
-          <p style={{ fontSize: 12, color: "#b91c1c", marginTop: 12 }} role="alert">
+          <p className="formError" role="alert">
             {error}
           </p>
         ) : null}
 
         {devAvailable ? (
-          <form onSubmit={handleDevSignIn} style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
-            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Email (dev login)</span>
+          <form onSubmit={handleDevSignIn} className="authForm authSection">
+            <label className="authLabel">
+              <span>Email (dev login)</span>
               <input
                 type="email"
                 value={devEmail}
                 onChange={(e) => setDevEmail(e.target.value)}
                 placeholder="worker@citybuild.local"
                 required
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: "var(--border-radius-md)",
-                  border: "0.5px solid var(--color-border-tertiary)",
-                  fontSize: 14,
-                }}
+                className="inputField"
               />
             </label>
             <button type="submit" className="btnPrimary" disabled={loading}>
@@ -208,11 +193,11 @@ export default function LoginPage() {
           </form>
         ) : null}
 
-        <div style={{ marginTop: 24, paddingTop: 20, borderTop: "0.5px solid var(--color-border-tertiary)" }}>
+        <div className="authSection">
           <p className="muted" style={{ fontSize: 12, marginBottom: 8 }}>
             Other sign-in options
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="authForm">
             {googleAvailable ? (
               <button
                 type="button"
@@ -224,25 +209,20 @@ export default function LoginPage() {
               </button>
             ) : null}
             {emailAvailable ? (
-              <form onSubmit={handleMagicLinkSignIn} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <form onSubmit={handleMagicLinkSignIn} className="authForm">
                 <input
                   type="email"
                   value={magicEmail}
                   onChange={(e) => setMagicEmail(e.target.value)}
                   placeholder="you@company.org"
                   required
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: "var(--border-radius-md)",
-                    border: "0.5px solid var(--color-border-tertiary)",
-                    fontSize: 14,
-                  }}
+                  className="inputField"
                 />
                 <button type="submit" className="btnSecondary" disabled={magicLoading} style={{ width: "100%" }}>
                   {magicLoading ? "Sending link…" : "Continue with email link"}
                 </button>
                 {magicLinkMessage ? (
-                  <p style={{ fontSize: 12, color: "#166534" }} role="status">
+                  <p className="formSuccess" role="status">
                     {magicLinkMessage}
                   </p>
                 ) : null}

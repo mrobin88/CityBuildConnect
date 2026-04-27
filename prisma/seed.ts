@@ -23,6 +23,8 @@ async function clearSeedUsers() {
   await prisma.application.deleteMany({ where: { workerId: { in: ids } } });
   await prisma.jobPosting.deleteMany({ where: { employerId: { in: ids } } });
   await prisma.certification.deleteMany({ where: { workerId: { in: ids } } });
+  await prisma.portfolioItem.deleteMany({ where: { workerId: { in: ids } } });
+  await prisma.jobSiteExperience.deleteMany({ where: { workerId: { in: ids } } });
   await prisma.workerProfile.deleteMany({ where: { userId: { in: ids } } });
   await prisma.employerProfile.deleteMany({ where: { userId: { in: ids } } });
   await prisma.user.deleteMany({ where: { id: { in: ids } } });
@@ -70,11 +72,53 @@ async function main() {
               },
             ],
           },
+          jobSiteExperiences: {
+            create: [
+              {
+                projectName: "Mission Rock — Building C",
+                location: "Mission Bay, San Francisco, CA",
+                companyName: "Turner Construction",
+                roleOnSite: "Electrical apprentice (temp power & rough-in)",
+                startDate: new Date("2024-03-01"),
+                endDate: new Date("2024-11-30"),
+                notes: "High-rise mixed-use; conduit runs and panel rough-in.",
+                sortOrder: 0,
+              },
+              {
+                projectName: "Civic Center seismic retrofit",
+                location: "Civic Center, San Francisco",
+                companyName: "Swinerton",
+                roleOnSite: "Material handling & rough-in support",
+                startDate: new Date("2023-06-01"),
+                endDate: new Date("2024-02-28"),
+                sortOrder: 1,
+              },
+            ],
+          },
         },
       },
     },
     include: { workerProfile: true },
   });
+
+  const wid = worker.workerProfile?.userId;
+  if (wid) {
+    const firstSite = await prisma.jobSiteExperience.findFirst({
+      where: { workerId: wid },
+      orderBy: { sortOrder: "asc" },
+    });
+    if (firstSite) {
+      await prisma.portfolioItem.create({
+        data: {
+          workerId: wid,
+          workSiteId: firstSite.id,
+          title: "Panel rough-in — Building C",
+          description: "Commercial service rough-in; EMT runs to MDP and tenant panels.",
+          sortOrder: 0,
+        },
+      });
+    }
+  }
 
   const employer = await prisma.user.create({
     data: {

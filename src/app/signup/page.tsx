@@ -62,83 +62,63 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: 24 }}>
-      <div style={{ width: "100%", maxWidth: 420, marginTop: 48 }}>
-        <Link href="/login" style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+    <div className="authShell">
+      <div className="authCard">
+        <Link href="/login" className="authBackLink">
           ← Back to sign in
         </Link>
-        <h1 style={{ fontSize: 22, fontWeight: 600, marginTop: 16, marginBottom: 8 }}>Create account</h1>
-        <p className="muted" style={{ fontSize: 13, marginBottom: 20, lineHeight: 1.45 }}>
+        <h1 className="authTitle">Create account</h1>
+        <p className="muted authLead">
           Create your CityBuild Connect account with email and password.
         </p>
 
-        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>First name</span>
+        <form onSubmit={handleSignup} className="authForm">
+          <label className="authLabel">
+            <span>First name</span>
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
-              style={{
-                padding: "10px 12px",
-                borderRadius: "var(--border-radius-md)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                fontSize: 14,
-              }}
+              className="inputField"
             />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Last name</span>
+          <label className="authLabel">
+            <span>Last name</span>
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
-              style={{
-                padding: "10px 12px",
-                borderRadius: "var(--border-radius-md)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                fontSize: 14,
-              }}
+              className="inputField"
             />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Email</span>
+          <label className="authLabel">
+            <span>Email</span>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.org"
               required
-              style={{
-                padding: "10px 12px",
-                borderRadius: "var(--border-radius-md)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                fontSize: 14,
-              }}
+              className="inputField"
             />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Role</span>
+          <label className="authLabel">
+            <span>Role</span>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              style={{
-                padding: "10px 12px",
-                borderRadius: "var(--border-radius-md)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                fontSize: 14,
-              }}
+              className="inputField"
             >
               <option value="WORKER">Worker / Apprentice</option>
               <option value="EMPLOYER">Employer / Company</option>
             </select>
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Password</span>
+          <label className="authLabel">
+            <span>Password</span>
             <input
               type="password"
               value={password}
@@ -146,17 +126,12 @@ export default function SignupPage() {
               minLength={8}
               required
               placeholder="At least 8 characters"
-              style={{
-                padding: "10px 12px",
-                borderRadius: "var(--border-radius-md)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                fontSize: 14,
-              }}
+              className="inputField"
             />
           </label>
 
           {error ? (
-            <p style={{ fontSize: 12, color: "#b91c1c" }} role="alert">
+            <p className="formError" role="alert">
               {error}
             </p>
           ) : null}

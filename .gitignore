@@ -20,6 +20,9 @@
 .DS_Store
 *.pem
 
+# local cert uploads (when not using Azure Blob)
+/uploads/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
