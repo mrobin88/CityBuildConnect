@@ -1,0 +1,2 @@
+ALTER TABLE "WorkerProfile"
+ADD COLUMN "isPublic" BOOLEAN NOT NULL DEFAULT true;

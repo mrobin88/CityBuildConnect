@@ -9,7 +9,7 @@ export function PlaceholderPage({ title }: PlaceholderPageProps) {
       <div className="content">
         <div className="card" style={{ maxWidth: 560 }}>
           <div className="cardBody muted">
-            This area is scaffolded for the roadmap. Wire it to Prisma and APIs next.
+            This section is in progress and will be available in an upcoming release.
           </div>
         </div>
       </div>

@@ -3,7 +3,6 @@ import type { UserRole } from "@prisma/client";
 export type NavItem = {
   href: string;
   label: string;
-  icon: string;
 };
 
 export type NavSection = { heading: string; items: NavItem[] };
@@ -12,14 +11,13 @@ const workerNav: NavSection[] = [
   {
     heading: "Career",
     items: [
-      { href: "/worker/profile", label: "Profile & cert wallet", icon: "👤" },
-      { href: "/worker/jobs", label: "Browse openings", icon: "📋" },
-      { href: "/worker/hours", label: "Hours tracker", icon: "📊" },
+      { href: "/worker/profile", label: "Profile & cert wallet" },
+      { href: "/worker/jobs", label: "Browse openings" },
     ],
   },
   {
     heading: "Connect",
-    items: [{ href: "/worker/messages", label: "Messages", icon: "💬" }],
+    items: [{ href: "/worker/messages", label: "Messages" }],
   },
 ];
 
@@ -27,28 +25,26 @@ const employerNav: NavSection[] = [
   {
     heading: "Discover",
     items: [
-      { href: "/employer/browse", label: "Browse workers", icon: "🔍" },
-      { href: "/employer/postings", label: "My postings", icon: "📋" },
-      { href: "/employer/saved", label: "Saved profiles", icon: "⭐" },
+      { href: "/employer/browse", label: "Browse workers" },
+      { href: "/employer/postings", label: "Job postings" },
+      { href: "/employer/saved", label: "Talent list" },
     ],
   },
   {
     heading: "Connect",
-    items: [{ href: "/employer/messages", label: "Messages", icon: "💬" }],
+    items: [{ href: "/employer/messages", label: "Messages" }],
   },
   {
     heading: "Manage",
     items: [
-      { href: "/employer/crew", label: "Active crew", icon: "👷" },
-      { href: "/employer/hours", label: "Hours tracker", icon: "📊" },
-      { href: "/employer/contracts", label: "Contracts", icon: "📄" },
+      { href: "/employer/crew", label: "Roster" },
     ],
   },
   {
     heading: "Account",
     items: [
-      { href: "/employer/company", label: "Company profile", icon: "🏢" },
-      { href: "/employer/settings", label: "Settings", icon: "⚙️" },
+      { href: "/employer/company", label: "Organization profile" },
+      { href: "/employer/settings", label: "Settings" },
     ],
   },
 ];
@@ -57,9 +53,9 @@ const adminNav: NavSection[] = [
   {
     heading: "Operations",
     items: [
-      { href: "/admin", label: "Dashboard", icon: "📈" },
-      { href: "/admin/cohorts", label: "Cohorts", icon: "👥" },
-      { href: "/admin/certs", label: "Cert monitoring", icon: "🪪" },
+      { href: "/admin", label: "Dashboard" },
+      { href: "/admin/cohorts", label: "Cohorts" },
+      { href: "/admin/certs", label: "Cert monitoring" },
     ],
   },
 ];

@@ -18,8 +18,9 @@ export default async function EmployerBrowsePage() {
   if (!session?.user) redirect("/login");
   if (session.user.role !== "EMPLOYER") redirect(defaultHomeForRole(session.user.role));
 
-  const [workersRaw, jobsRaw, placementsYtd, hoursAgg] = await Promise.all([
+  const [workersRaw, jobsRaw, placementsYtd, hoursAgg, rosterIds] = await Promise.all([
     prisma.workerProfile.findMany({
+      where: { isPublic: true },
       include: {
         user: { select: { name: true } },
         certifications: { take: 4, orderBy: { name: "asc" } },
@@ -38,6 +39,10 @@ export default async function EmployerBrowsePage() {
       where: { status: "HIRED", createdAt: { gte: new Date(new Date().getFullYear(), 0, 1) } },
     }),
     prisma.workerProfile.aggregate({ _avg: { totalHours: true } }),
+    prisma.employerRosterEntry.findMany({
+      where: { employerId: session.user.id, archived: false },
+      select: { workerId: true },
+    }),
   ]);
 
   const workers: BrowseWorkerRow[] = workersRaw.map((w) => ({
@@ -95,5 +100,13 @@ export default async function EmployerBrowsePage() {
           { name: "NFPA 70E", expiryLabel: "Exp. Aug 2026", status: "green" as const },
         ];
 
-  return <BrowseEmployersClient workers={workers} jobs={jobs} stats={stats} certPreview={certPreview} />;
+  return (
+    <BrowseEmployersClient
+      workers={workers}
+      jobs={jobs}
+      stats={stats}
+      certPreview={certPreview}
+      initialRosterWorkerIds={rosterIds.map((r) => r.workerId)}
+    />
+  );
 }

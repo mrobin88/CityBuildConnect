@@ -70,9 +70,6 @@ export function Sidebar({ role, userLabel }: SidebarProps) {
                     href={item.href}
                     className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}
                   >
-                    <span className={styles.navIcon} aria-hidden>
-                      {item.icon}
-                    </span>
                     {item.label}
                   </Link>
                 );
@@ -106,9 +103,6 @@ export function Sidebar({ role, userLabel }: SidebarProps) {
                         onClick={() => setMenuOpen(false)}
                         className={`${styles.mobileItem} ${active ? styles.mobileItemActive : ""}`}
                       >
-                        <span className={styles.navIcon} aria-hidden>
-                          {item.icon}
-                        </span>
                         {item.label}
                       </Link>
                     );

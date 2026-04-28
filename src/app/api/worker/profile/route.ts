@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     location?: string | null;
     bio?: string | null;
     availableFrom?: string | null;
+    isPublic?: boolean;
   };
 
   const trade = body.trade?.trim() ?? "";
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
   const location = body.location?.trim() || null;
   const bio = body.bio?.trim() || null;
   const availableFrom = body.availableFrom ? new Date(body.availableFrom) : null;
+  const isPublic = typeof body.isPublic === "boolean" ? body.isPublic : true;
 
   if (!trade) {
     return NextResponse.json({ error: "Trade is required." }, { status: 400 });
@@ -37,6 +39,7 @@ export async function POST(req: Request) {
       unionLocal,
       bio,
       availableFrom,
+      isPublic,
     },
     create: {
       userId: session.user.id,
@@ -45,6 +48,7 @@ export async function POST(req: Request) {
       unionLocal,
       bio,
       availableFrom,
+      isPublic,
       totalHours: 0,
     },
   });

@@ -35,6 +35,7 @@ type Props = {
   jobs: BrowseJobRow[];
   stats: BrowseStats;
   certPreview: { name: string; expiryLabel: string; status: "green" | "amber" }[];
+  initialRosterWorkerIds: string[];
 };
 
 const AVATAR_CLASS = ["avBlue", "avTeal", "avAmber", "avPurple"] as const;
@@ -47,12 +48,15 @@ function initials(name: string | null): string {
   return (parts[0]![0] + parts[parts.length - 1]![0]).toUpperCase();
 }
 
-export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Props) {
+export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initialRosterWorkerIds }: Props) {
   const router = useRouter();
   const [trade, setTrade] = useState("All trades");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [rosterWorkerIds, setRosterWorkerIds] = useState<Set<string>>(new Set(initialRosterWorkerIds));
+  const [busyAddWorkerId, setBusyAddWorkerId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
@@ -72,6 +76,33 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
   const visibleWorkers = filtered.slice(0, visibleCount);
   const hasMoreWorkers = visibleWorkers.length < filtered.length;
   const featuredWorker = visibleWorkers[0];
+
+  async function addToRoster(workerId: string) {
+    if (rosterWorkerIds.has(workerId)) return;
+    setError(null);
+    setBusyAddWorkerId(workerId);
+    try {
+      const res = await fetch("/api/employer/roster", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workerId }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(data.error ?? "Could not add worker to roster.");
+        return;
+      }
+      setRosterWorkerIds((prev) => {
+        const next = new Set(prev);
+        next.add(workerId);
+        return next;
+      });
+    } catch {
+      setError("Could not add worker to roster.");
+    } finally {
+      setBusyAddWorkerId(null);
+    }
+  }
 
   return (
     <div className="pageStack">
@@ -114,6 +145,14 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
               <div className="statDelta">Across roster</div>
             </div>
           </div>
+
+          {error ? (
+            <div className="card">
+              <div className="cardBody">
+                <p style={{ color: "#b91c1c", fontSize: 12 }}>{error}</p>
+              </div>
+            </div>
+          ) : null}
 
           {featuredWorker ? (
             <div className="card">
@@ -159,6 +198,15 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                   >
                     View profile
                   </Link>
+                  <button
+                    type="button"
+                    className="btnSecondary"
+                    style={{ fontSize: 12, padding: "7px 12px" }}
+                    onClick={() => void addToRoster(featuredWorker.userId)}
+                    disabled={rosterWorkerIds.has(featuredWorker.userId) || busyAddWorkerId === featuredWorker.userId}
+                  >
+                    {rosterWorkerIds.has(featuredWorker.userId) ? "In roster" : busyAddWorkerId === featuredWorker.userId ? "Adding..." : "Add to roster"}
+                  </button>
                 </div>
               </div>
             </div>
@@ -236,6 +284,18 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                     >
                       Message
                     </Link>
+                    <button
+                      type="button"
+                      className="btnSecondary"
+                      style={{ fontSize: 11, padding: "5px 10px" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void addToRoster(w.userId);
+                      }}
+                      disabled={rosterWorkerIds.has(w.userId) || busyAddWorkerId === w.userId}
+                    >
+                      {rosterWorkerIds.has(w.userId) ? "In roster" : busyAddWorkerId === w.userId ? "Adding..." : "Add to roster"}
+                    </button>
                   </div>
                 </div>
               ))

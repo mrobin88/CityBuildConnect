@@ -140,7 +140,7 @@ export function EmployerPostingsClient({ postings }: Props) {
   return (
     <div className="pageStack">
       <header className="topbar">
-        <h1 className="pageTitle">My postings</h1>
+        <h1 className="pageTitle">Job postings</h1>
       </header>
 
       <div className="content">

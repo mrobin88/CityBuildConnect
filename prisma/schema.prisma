@@ -87,12 +87,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts          Account[]
-  sessions          Session[]
-  workerProfile     WorkerProfile?
-  employerProfile   EmployerProfile?
-  messagesSent      Message[]       @relation("MessageFrom")
-  messagesReceived  Message[]       @relation("MessageTo")
+  accounts         Account[]
+  sessions         Session[]
+  workerProfile    WorkerProfile?
+  employerProfile  EmployerProfile?
+  messagesSent     Message[]        @relation("MessageFrom")
+  messagesReceived Message[]        @relation("MessageTo")
 }
 
 model WorkerProfile {
@@ -104,30 +104,32 @@ model WorkerProfile {
   unionLocal     String?
   bio            String?   @db.Text
   availableFrom  DateTime?
+  isPublic       Boolean   @default(true)
   profilePhoto   String?
 
-  certifications   Certification[]
-  applications     Application[]       @relation("WorkerApplications")
-  hoursLogs        HoursLog[]
+  certifications     Certification[]
+  applications       Application[]         @relation("WorkerApplications")
+  hoursLogs          HoursLog[]
   jobSiteExperiences JobSiteExperience[]
-  portfolioItems   PortfolioItem[]
+  portfolioItems     PortfolioItem[]
+  rosterEntries      EmployerRosterEntry[]
 }
 
 /// Job sites / projects the worker has been on (resume-style).
 model JobSiteExperience {
-  id            String   @id @default(cuid())
-  workerId      String
-  worker        WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
-  projectName   String
-  location      String?
-  companyName   String?
-  roleOnSite    String?
-  startDate     DateTime?
-  endDate       DateTime?
-  notes         String?  @db.Text
-  sortOrder     Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String        @id @default(cuid())
+  workerId    String
+  worker      WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  projectName String
+  location    String?
+  companyName String?
+  roleOnSite  String?
+  startDate   DateTime?
+  endDate     DateTime?
+  notes       String?       @db.Text
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   portfolioItems PortfolioItem[]
 
@@ -136,33 +138,33 @@ model JobSiteExperience {
 
 /// Photos / descriptions of work for employer-facing portfolio.
 model PortfolioItem {
-  id           String   @id @default(cuid())
-  workerId     String
-  worker       WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
-  workSiteId   String?
-  workSite     JobSiteExperience? @relation(fields: [workSiteId], references: [id], onDelete: SetNull)
-  title        String
-  description  String?  @db.Text
-  imageUrl     String?
-  sortOrder    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String             @id @default(cuid())
+  workerId    String
+  worker      WorkerProfile      @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  workSiteId  String?
+  workSite    JobSiteExperience? @relation(fields: [workSiteId], references: [id], onDelete: SetNull)
+  title       String
+  description String?            @db.Text
+  imageUrl    String?
+  sortOrder   Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@index([workerId, sortOrder])
 }
 
 model Certification {
-  id           String    @id @default(cuid())
-  workerId     String
-  worker       WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
-  name         String
-  issuingBody  String?
-  issueDate    DateTime?
-  expiryDate   DateTime?
-  documentUrl  String?
-  verified     Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String        @id @default(cuid())
+  workerId    String
+  worker      WorkerProfile @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  name        String
+  issuingBody String?
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  documentUrl String?
+  verified    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model EmployerProfile {
@@ -174,8 +176,28 @@ model EmployerProfile {
   website       String?
   logo          String?
 
-  jobPostings JobPosting[]
-  hoursLogs   HoursLog[]
+  jobPostings   JobPosting[]
+  hoursLogs     HoursLog[]
+  rosterEntries EmployerRosterEntry[]
+}
+
+model EmployerRosterEntry {
+  id            String          @id @default(cuid())
+  employerId    String
+  employer      EmployerProfile @relation(fields: [employerId], references: [userId], onDelete: Cascade)
+  workerId      String
+  worker        WorkerProfile   @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  contactStatus String          @default("NEW")
+  tags          String[]        @default([])
+  privateNotes  String?         @db.Text
+  lastContactAt DateTime?
+  archived      Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@unique([employerId, workerId])
+  @@index([employerId, archived, updatedAt])
+  @@index([workerId])
 }
 
 model JobPosting {
@@ -198,33 +220,33 @@ model JobPosting {
 }
 
 model Application {
-  id           String              @id @default(cuid())
+  id           String            @id @default(cuid())
   workerId     String
-  worker       WorkerProfile       @relation("WorkerApplications", fields: [workerId], references: [userId], onDelete: Cascade)
+  worker       WorkerProfile     @relation("WorkerApplications", fields: [workerId], references: [userId], onDelete: Cascade)
   jobPostingId String
-  jobPosting   JobPosting          @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
-  status       ApplicationStatus   @default(PENDING)
-  message      String?             @db.Text
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  jobPosting   JobPosting        @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  status       ApplicationStatus @default(PENDING)
+  message      String?           @db.Text
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@unique([workerId, jobPostingId])
 }
 
 model HoursLog {
-  id         String           @id @default(cuid())
+  id         String          @id @default(cuid())
   workerId   String
-  worker     WorkerProfile    @relation(fields: [workerId], references: [userId], onDelete: Cascade)
+  worker     WorkerProfile   @relation(fields: [workerId], references: [userId], onDelete: Cascade)
   employerId String
-  employer   EmployerProfile  @relation(fields: [employerId], references: [userId], onDelete: Cascade)
+  employer   EmployerProfile @relation(fields: [employerId], references: [userId], onDelete: Cascade)
   jobId      String?
-  job        JobPosting?      @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  job        JobPosting?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
   date       DateTime
   hours      Float
-  notes      String?          @db.Text
-  verified   Boolean          @default(false)
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  notes      String?         @db.Text
+  verified   Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 }
 
 model Message {

@@ -32,6 +32,9 @@ export default async function WorkerPublicProfilePage({ params }: PageProps) {
   });
 
   if (!profile) notFound();
+  if (!profile.isPublic && session.user.id !== profile.userId && session.user.role !== "ADMIN") {
+    notFound();
+  }
 
   return (
     <div className="pageStack">

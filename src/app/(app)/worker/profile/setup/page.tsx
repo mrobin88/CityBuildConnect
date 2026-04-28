@@ -11,6 +11,7 @@ export default function WorkerProfileSetupPage() {
   const [location, setLocation] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
   const [bio, setBio] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +30,7 @@ export default function WorkerProfileSetupPage() {
           location: location || null,
           availableFrom: availableFrom || null,
           bio: bio || null,
+          isPublic,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -102,6 +104,13 @@ export default function WorkerProfileSetupPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
+              <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} disabled={saving} />
+                <span>List my profile in worker directory</span>
+              </label>
+              <p className="muted" style={{ margin: 0, fontSize: 12 }}>
+                You can change this later in your profile settings.
+              </p>
 
               {error ? <p style={{ color: "#b91c1c", fontSize: 12 }}>{error}</p> : null}
 

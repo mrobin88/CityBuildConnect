@@ -8,6 +8,7 @@ import { defaultHomeForRole } from "@/lib/routes";
 import { CertUploadForm } from "@/components/worker/cert-upload-form";
 import { JobSitesManager, type JobSiteRow } from "@/components/worker/job-sites-manager";
 import { PortfolioManager, type PortfolioRow } from "@/components/worker/portfolio-manager";
+import { ProfileVisibilityToggle } from "@/components/worker/profile-visibility-toggle";
 import { ShareProfileButton } from "@/components/worker/share-profile-button";
 
 export const dynamic = "force-dynamic";
@@ -86,7 +87,7 @@ export default async function WorkerProfilePage() {
           <Link href="/worker/profile/setup" className="btnSecondary">
             Edit
           </Link>
-          <ShareProfileButton profileUrl={`/profiles/${session.user.id}`} />
+          {profile.isPublic ? <ShareProfileButton profileUrl={`/profiles/${session.user.id}`} /> : null}
         </div>
       </header>
 
@@ -135,6 +136,9 @@ export default async function WorkerProfilePage() {
                   ) : null}
                 </div>
               </div>
+            </div>
+            <div className="cardBody" style={{ paddingTop: 0 }}>
+              <ProfileVisibilityToggle initialIsPublic={profile.isPublic} />
             </div>
           </div>
 
