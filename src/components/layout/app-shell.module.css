@@ -11,3 +11,9 @@
   min-width: 0;
   overflow: hidden;
 }
+
+@media (max-width: 960px) {
+  .main {
+    padding-top: 74px;
+  }
+}
