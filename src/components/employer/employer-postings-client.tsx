@@ -155,7 +155,7 @@ export function EmployerPostingsClient({ postings }: Props) {
               <div className="statValue">{summary.applicants}</div>
             </div>
             <div className="stat">
-              <div className="statLabel">Hired</div>
+              <div className="statLabel">People placed</div>
               <div className="statValue">{summary.hired}</div>
             </div>
           </div>
@@ -170,7 +170,7 @@ export function EmployerPostingsClient({ postings }: Props) {
 
           {items.length === 0 ? (
             <div className="card">
-              <div className="cardBody muted">No postings yet. Create your first opening to start hiring.</div>
+              <div className="cardBody muted">No postings yet. Create an opening and help someone step into their next chapter.</div>
             </div>
           ) : (
             items.map((posting) => (
@@ -237,7 +237,7 @@ export function EmployerPostingsClient({ postings }: Props) {
         <div className="colSide">
           <div className="card" id="new-posting">
             <div className="cardHeader">
-              <span className="cardTitle">Create opening</span>
+              <span className="cardTitle">Create an opening</span>
             </div>
             <form className="cardBody" onSubmit={createPosting} style={{ display: "grid", gap: 8 }}>
               <input className="inputField" placeholder="Job title" value={title} onChange={(e) => setTitle(e.target.value)} required />

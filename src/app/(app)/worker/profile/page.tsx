@@ -128,7 +128,7 @@ export default async function WorkerProfilePage() {
                 ) : null}
                 <div className="workerMeta" style={{ marginTop: 8 }}>
                   <span className="tag tagBlue">Pre-apprenticeship pathway</span>
-                  <span className="tag tagGreen">Ready for placement</span>
+                  <span className="tag tagGreen">Ready for the next call</span>
                   {profile.availableFrom ? (
                     <span className="tag tagAmber">
                       Available {profile.availableFrom.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
@@ -186,7 +186,7 @@ export default async function WorkerProfilePage() {
             </div>
             <div className="cardBody" style={{ paddingTop: 4, paddingBottom: 4 }}>
               {profile.certifications.length === 0 ? (
-                <div className="muted">Upload certs to build trust with employers.</div>
+                <div className="muted">Upload certs so employers can back you with confidence.</div>
               ) : (
                 profile.certifications.map((c) => {
                   const st = certExpiryStatus(c.expiryDate);

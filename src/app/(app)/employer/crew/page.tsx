@@ -116,7 +116,7 @@ async function EmployerCrewData() {
         <div className="colMain">
           <div className="card">
             <div className="cardHeader">
-              <span className="cardTitle">People and outreach notes</span>
+              <span className="cardTitle">People you can back</span>
               <span className="muted">{rows.length} people</span>
             </div>
             <div className="cardBody">

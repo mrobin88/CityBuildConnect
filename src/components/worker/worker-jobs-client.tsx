@@ -80,7 +80,7 @@ export function WorkerJobsClient({ jobs }: Props) {
   return (
     <div className="pageStack">
       <header className="topbar">
-        <h1 className="pageTitle">Open jobs</h1>
+        <h1 className="pageTitle">Work opportunities</h1>
         <div className="topbarActions">
           <button
             type="button"
@@ -99,7 +99,7 @@ export function WorkerJobsClient({ jobs }: Props) {
         <div className="colMain">
           <div className="card">
             <div className="cardHeader">
-              <span className="cardTitle">Find your next site placement</span>
+              <span className="cardTitle">Find the next move that fits your grind</span>
               <span className="muted">{filtered.length} openings</span>
             </div>
             <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
@@ -172,12 +172,12 @@ export function WorkerJobsClient({ jobs }: Props) {
         <div className="colSide">
           <div className="card">
             <div className="cardHeader">
-              <span className="cardTitle">Quick tips</span>
+              <span className="cardTitle">Keep momentum</span>
             </div>
             <div className="cardBody">
               <p className="muted" style={{ lineHeight: 1.45 }}>
-                Keep your cert wallet current and profile complete. Employers prioritize candidates with verified certs and updated
-                availability.
+                Keep your cert wallet current and your profile sharp. Employers can move faster when they see verified certs and
+                clear availability.
               </p>
             </div>
           </div>

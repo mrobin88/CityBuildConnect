@@ -107,7 +107,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
   return (
     <div className="pageStack">
       <header className="topbar">
-        <h1 className="pageTitle">Browse apprentices</h1>
+        <h1 className="pageTitle">Find people ready to work</h1>
         <div className="topbarActions">
           <button type="button" className="btnSecondary" onClick={() => searchRef.current?.focus()}>
             Filter
@@ -157,8 +157,8 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
           {featuredWorker ? (
             <div className="card">
               <div className="cardHeader">
-                <span className="cardTitle">Featured candidate</span>
-                <span className="muted">Quick view for fast matching</span>
+                <span className="cardTitle">Worker spotlight</span>
+                <span className="muted">Someone ready for a real shot</span>
               </div>
               <div className="cardBody" style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <div className={`avatar ${AVATAR_CLASS[0]}`} style={{ width: 48, height: 48 }}>
@@ -214,7 +214,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
 
           <div className="card">
             <div className="cardHeader">
-              <span className="cardTitle">Apprentice roster</span>
+              <span className="cardTitle">Worker directory</span>
               <span className="muted">{filtered.length} results</span>
             </div>
             <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
@@ -231,7 +231,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
               />
             </div>
             {filtered.length === 0 ? (
-              <div className="cardBody muted">No workers match this trade yet.</div>
+              <div className="cardBody muted">No workers match this trade yet. Try widening filters to find more people ready to jump in.</div>
             ) : (
               visibleWorkers.map((w, i) => (
                 <div
