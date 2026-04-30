@@ -81,7 +81,7 @@ export default function LoginPage() {
         redirect: false,
       });
       if (res?.error) {
-        setError("Could not sign in. Seed the DB and use worker@citybuild.local, employer@citybuild.local, or admin@citybuild.local.");
+        setError("Could not sign in. Seed the DB and use worker@hingeline.local, employer@hingeline.local, or admin@hingeline.local.");
         setLoading(false);
         return;
       }
@@ -129,10 +129,8 @@ export default function LoginPage() {
         <Link href="/" className="authBackLink">
           ← Back
         </Link>
-        <h1 className="authTitle">Sign in</h1>
-        <p className="muted authLead">
-          Use email and password to sign in. You can also request an email magic link when it is configured.
-        </p>
+        <h1 className="authTitle">Sign in to HingeLine</h1>
+        <p className="muted authLead">Use email and password to sign in to the HingeLine network.</p>
 
         {passwordAvailable ? (
           <form onSubmit={handlePasswordSignIn} className="authForm">
@@ -182,7 +180,7 @@ export default function LoginPage() {
                 type="email"
                 value={devEmail}
                 onChange={(e) => setDevEmail(e.target.value)}
-                placeholder="worker@citybuild.local"
+                placeholder="worker@hingeline.local"
                 required
                 className="inputField"
               />

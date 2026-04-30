@@ -2,18 +2,20 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
 
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #f7f7f4;
-  --color-background-tertiary: #efeee9;
+  --color-background-primary: #f2f3f5;
+  --color-background-secondary: #e6e8eb;
+  --color-background-tertiary: #d9dde2;
 
-  --color-border-secondary: #cbc9bd;
-  --color-border-tertiary: #dfddd1;
+  --color-border-secondary: #aeb5be;
+  --color-border-tertiary: #c8ced6;
 
-  --color-text-primary: #24211a;
-  --color-text-secondary: #4f4a3f;
-  --color-text-tertiary: #746f63;
-  --color-accent: #d33a2c;
-  --color-accent-strong: #b92e22;
+  --color-text-primary: #13171d;
+  --color-text-secondary: #2e3741;
+  --color-text-tertiary: #59636f;
+  --color-accent: #c6932f;
+  --color-accent-strong: #e27f1d;
+  --color-warning: #d9751f;
+  --color-signal: #88929f;
 
   --border-radius-sm: 4px;
   --border-radius-md: 10px;
@@ -38,6 +40,7 @@ body {
   background: var(--color-background-tertiary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -72,20 +75,21 @@ a {
 }
 
 .btnPrimary {
-  background: var(--color-accent);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+  color: #11151a;
   border: none;
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 12px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 700;
   font-family: inherit;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 0 0 0.35px rgba(17, 21, 26, 0.6), 0 2px 6px rgba(20, 24, 30, 0.18);
 }
 
 .btnPrimary:disabled {
@@ -94,12 +98,13 @@ a {
 }
 
 .btnPrimary:hover {
-  background: var(--color-accent-strong);
+  background: linear-gradient(135deg, #d1a243, #f28a26);
   transform: translateY(-1px);
+  animation: hingeOpacityJitter 0.24s ease-out 1;
 }
 
 .btnSecondary {
-  background: #ffffff;
+  background: #f9fafb;
   border: 1px solid var(--color-border-secondary);
   border-radius: 999px;
   padding: 8px 14px;
@@ -115,14 +120,14 @@ a {
 }
 
 .btnSecondary:hover {
-  background: var(--color-background-secondary);
+  background: #edf0f3;
   transform: translateY(-1px);
 }
 
 .btnSecondaryActive {
-  background: var(--color-text-primary);
-  border-color: var(--color-text-primary);
-  color: #fff;
+  background: #1b2128;
+  border-color: #1b2128;
+  color: #f8f9fb;
 }
 
 /* Marketing + auth surfaces */
@@ -130,8 +135,8 @@ a {
 .marketingShell {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 8%, rgba(211, 58, 44, 0.08), transparent 24%),
-    radial-gradient(circle at 92% 20%, rgba(36, 33, 26, 0.08), transparent 20%),
+    radial-gradient(circle at 8% 8%, rgba(198, 147, 47, 0.18), transparent 24%),
+    radial-gradient(circle at 92% 20%, rgba(55, 65, 76, 0.15), transparent 20%),
     var(--color-background-tertiary);
   display: flex;
   flex-direction: column;
@@ -144,7 +149,7 @@ a {
   gap: 16px;
   padding: 18px 24px;
   border-bottom: 1px solid var(--color-border-tertiary);
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(242, 244, 247, 0.86);
   backdrop-filter: blur(4px);
 }
 
@@ -153,6 +158,8 @@ a {
   font-size: 28px;
   line-height: 1.1;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 0.35px rgba(18, 23, 29, 0.8);
 }
 
 .marketingSub {
@@ -173,7 +180,7 @@ a {
   border: 1px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
   padding: 28px;
-  box-shadow: 0 8px 18px rgba(45, 40, 32, 0.06);
+  box-shadow: 0 8px 18px rgba(24, 30, 38, 0.09);
 }
 
 .marketingKicker {
@@ -218,6 +225,19 @@ a {
   border: 1px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
   padding: 18px 16px;
+  box-shadow: inset 0 0 0 0.35px rgba(89, 99, 111, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.marketingCard:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 0.35px rgba(217, 117, 31, 0.55), 0 7px 14px rgba(24, 30, 38, 0.12);
+  animation: hingeOpacityJitter 0.22s ease-out 1;
+}
+
+.marketingCard:nth-child(odd) {
+  animation: hingeIdleFlicker 8.2s linear infinite;
+  animation-delay: 1.2s;
 }
 
 .marketingCard h2 {
@@ -237,8 +257,8 @@ a {
   place-items: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 0% 0%, rgba(211, 58, 44, 0.08), transparent 18%),
-    radial-gradient(circle at 100% 100%, rgba(36, 33, 26, 0.06), transparent 22%),
+    radial-gradient(circle at 0% 0%, rgba(198, 147, 47, 0.16), transparent 18%),
+    radial-gradient(circle at 100% 100%, rgba(49, 58, 69, 0.15), transparent 22%),
     var(--color-background-tertiary);
 }
 
@@ -249,7 +269,77 @@ a {
   border: 1px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
   padding: 20px;
-  box-shadow: 0 8px 18px rgba(45, 40, 32, 0.06);
+  box-shadow: 0 8px 18px rgba(24, 30, 38, 0.1);
+}
+
+.fxHingeBlink {
+  display: inline-block;
+  animation: hingeBlinkPulse 4.8s ease-in-out infinite;
+}
+
+.fxGlitchHover:hover {
+  animation: hingeOpacityJitter 0.22s ease-out 1;
+}
+
+@keyframes hingeBlinkPulse {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 0.82;
+    transform: translateX(-0.25px);
+  }
+  93% {
+    opacity: 0.96;
+    transform: translateX(0.25px);
+  }
+}
+
+@keyframes hingeOpacityJitter {
+  0% {
+    opacity: 1;
+    filter: saturate(1);
+  }
+  35% {
+    opacity: 0.88;
+    filter: saturate(1.07);
+  }
+  70% {
+    opacity: 0.96;
+    filter: saturate(1.02);
+  }
+  100% {
+    opacity: 1;
+    filter: saturate(1);
+  }
+}
+
+@keyframes hingeIdleFlicker {
+  0%,
+  94%,
+  100% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  96% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fxHingeBlink,
+  .fxGlitchHover,
+  .marketingCard:nth-child(odd),
+  .btnPrimary:hover,
+  .marketingCard:hover {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 .authBackLink {
@@ -661,6 +751,8 @@ a {
 }
 
 .certUploadInput {
+  width: 100%;
+  min-width: 0;
   padding: 8px 10px;
   border-radius: var(--border-radius-md);
   border: 0.5px solid var(--color-border-tertiary);
@@ -673,6 +765,13 @@ a {
 .certUploadInput:focus {
   outline: 2px solid #185fa5;
   outline-offset: 1px;
+}
+
+.certUploadFileInput {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 12px;
 }
 
 .certDocLink {

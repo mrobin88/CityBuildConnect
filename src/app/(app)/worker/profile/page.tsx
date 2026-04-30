@@ -96,7 +96,7 @@ export default async function WorkerProfilePage() {
           <div className="card">
             <div className="cardHeader">
               <span className="cardTitle">Digital resume</span>
-              <span className="tag tagGreen">CityBuild graduate profile</span>
+              <span className="tag tagGreen">HingeLine graduate profile</span>
             </div>
             <div className="cardBody" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div className="avatar avBlue" style={{ width: 56, height: 56, fontSize: 18 }}>

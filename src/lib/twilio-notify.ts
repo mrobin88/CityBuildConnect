@@ -17,7 +17,7 @@ export async function notifyNewDirectMessageSms(opts: {
   const to = normalizeUsPhone(opts.recipientPhone);
   if (!to) return;
 
-  const bodyText = `CityBuild: ${opts.senderDisplayName} messaged you. ${truncate(opts.preview, 120)}`.trim();
+  const bodyText = `HingeLine: ${opts.senderDisplayName} messaged you. ${truncate(opts.preview, 120)}`.trim();
 
   const body = new URLSearchParams();
   body.set("To", to);

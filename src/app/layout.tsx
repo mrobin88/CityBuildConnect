@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CityBuild Connect · Mission Hiring Hall",
+  title: "HingeLine · Mission Hiring Hall",
   description: "Union and pre-apprenticeship placement for construction trades.",
 };
 

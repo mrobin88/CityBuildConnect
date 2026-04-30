@@ -16,8 +16,8 @@ export default async function HomePage() {
     <div className="marketingShell">
       <header className="marketingHeader">
         <div>
-          <div className="marketingBrand">CityBuild Connect</div>
-          <div className="marketingSub">Mission Hiring Hall</div>
+          <div className="marketingBrand fxHingeBlink">HingeLine</div>
+          <div className="marketingSub">Union Workforce Signal Network</div>
         </div>
         <div className="marketingActions">
           <Link className="btnSecondary" href="/signup">
@@ -32,10 +32,12 @@ export default async function HomePage() {
       <main className="marketingMain">
         <section className="marketingHero">
           <p className="marketingKicker">Union workforce platform</p>
-          <h1 className="marketingTitle">Connect skilled workers with the right job site, faster.</h1>
+          <h1 className="marketingTitle">
+            Connect skilled workers with the right job site, faster, with a sharper field ops signal.
+          </h1>
           <p className="marketingLead">
-            CityBuild Connect gives employers a focused talent pipeline and gives workers a portable profile with certs,
-            hours, portfolio, and messaging.
+            HingeLine gives employers a focused talent pipeline and gives workers a portable profile with certs, hours,
+            portfolio, and messaging.
           </p>
           <div className="marketingActions">
             <Link className="btnPrimary" href="/signup">

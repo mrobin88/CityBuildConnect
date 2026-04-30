@@ -41,7 +41,7 @@ export function CertUploadForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ display: "grid", gap: 10, marginTop: 12 }}>
+    <form onSubmit={onSubmit} style={{ display: "grid", gap: 10, marginTop: 12, width: "100%", minWidth: 0 }}>
       <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-text-primary)" }}>Upload a cert</div>
       <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <span className="muted" style={{ fontSize: 11 }}>
@@ -80,7 +80,14 @@ export function CertUploadForm() {
         <span className="muted" style={{ fontSize: 11 }}>
           File (PDF, JPEG, PNG, WebP — max 10 MB)
         </span>
-        <input name="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/*" required disabled={pending} />
+        <input
+          name="file"
+          type="file"
+          className="certUploadFileInput"
+          accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/*"
+          required
+          disabled={pending}
+        />
       </label>
       {message ? (
         <p style={{ fontSize: 12, color: message.type === "ok" ? "#166534" : "#b91c1c" }} role="status">
