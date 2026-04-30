@@ -85,7 +85,7 @@ async function EmployerCrewData() {
   });
 
   const rowsByWorker = new Map(rowsFromEntries.map((row) => [row.workerId, row]));
-  for (const [workerId, summary] of placementsByWorker) {
+  placementsByWorker.forEach((summary, workerId) => {
     if (!rowsByWorker.has(workerId)) {
       rowsByWorker.set(workerId, {
         workerId,
@@ -100,9 +100,9 @@ async function EmployerCrewData() {
         lastContactAt: null,
       });
     }
-  }
+  });
 
-  const rows = [...rowsByWorker.values()].sort((a, b) => {
+  const rows = Array.from(rowsByWorker.values()).sort((a, b) => {
     if (a.placementCount !== b.placementCount) return b.placementCount - a.placementCount;
     return a.workerName.localeCompare(b.workerName);
   });
