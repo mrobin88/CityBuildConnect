@@ -9,6 +9,7 @@ type Props = {
     companyName: string;
     licenseNumber: string | null;
     website: string | null;
+    logo: string | null;
     location: string | null;
     projectTypes: ProjectType[];
   };
@@ -25,7 +26,11 @@ export function CompanyProfileForm({ initial }: Props) {
   const [companyName, setCompanyName] = useState(initial.companyName);
   const [licenseNumber, setLicenseNumber] = useState(initial.licenseNumber ?? "");
   const [website, setWebsite] = useState(initial.website ?? "");
+  const [logo, setLogo] = useState(initial.logo ?? "");
   const [location, setLocation] = useState(initial.location ?? "");
+  const [lookupInput, setLookupInput] = useState(initial.website ?? initial.companyName ?? "");
+  const [lookupBusy, setLookupBusy] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState<string | null>(null);
   const [projectTypes, setProjectTypes] = useState<Set<ProjectType>>(new Set(initial.projectTypes));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -37,6 +42,36 @@ export function CompanyProfileForm({ initial }: Props) {
       else next.add(value);
       return next;
     });
+  }
+
+  async function runCompanyLookup() {
+    if (!lookupInput.trim()) {
+      setLookupMessage("Enter a company website, domain, or email first.");
+      return;
+    }
+    setLookupBusy(true);
+    setLookupMessage(null);
+    try {
+      const res = await fetch(`/api/company/enrich?q=${encodeURIComponent(lookupInput.trim())}`, { method: "GET" });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        companyName?: string;
+        website?: string;
+        suggestedLogo?: string | null;
+      };
+      if (!res.ok) {
+        setLookupMessage(data.error ?? "Could not look up company details.");
+        return;
+      }
+      if (data.companyName) setCompanyName(data.companyName);
+      if (data.website) setWebsite(data.website);
+      if (data.suggestedLogo) setLogo(data.suggestedLogo);
+      setLookupMessage("Company info applied. Review and save.");
+    } catch {
+      setLookupMessage("Could not look up company details.");
+    } finally {
+      setLookupBusy(false);
+    }
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -52,6 +87,7 @@ export function CompanyProfileForm({ initial }: Props) {
           companyName,
           licenseNumber: licenseNumber || null,
           website: website || null,
+          logo: logo || null,
           location: location || null,
           projectTypes: [...projectTypes],
         }),
@@ -72,6 +108,26 @@ export function CompanyProfileForm({ initial }: Props) {
 
   return (
     <form className="cardBody" onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
+      <fieldset style={{ border: 0, padding: 0, margin: 0, display: "grid", gap: 8 }}>
+        <legend className="muted" style={{ marginBottom: 2 }}>
+          Company lookup
+        </legend>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <input
+            className="inputField"
+            style={{ flex: 1, minWidth: 220 }}
+            value={lookupInput}
+            onChange={(e) => setLookupInput(e.target.value)}
+            placeholder="example.com or contact@company.com"
+            disabled={saving || lookupBusy}
+          />
+          <button type="button" className="btnSecondary" onClick={() => void runCompanyLookup()} disabled={saving || lookupBusy}>
+            {lookupBusy ? "Finding..." : "Autofill"}
+          </button>
+        </div>
+        {lookupMessage ? <div className="muted">{lookupMessage}</div> : null}
+      </fieldset>
+
       <label className="portfolioLabel">
         Organization name *
         <input
@@ -109,6 +165,26 @@ export function CompanyProfileForm({ initial }: Props) {
       </label>
 
       <label className="portfolioLabel">
+        Logo URL
+        <input
+          className="inputField"
+          value={logo}
+          onChange={(e) => setLogo(e.target.value)}
+          maxLength={500}
+          placeholder="https://logo.clearbit.com/example.com"
+          disabled={saving}
+        />
+      </label>
+
+      {logo ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logo} alt="Company logo preview" style={{ width: 42, height: 42, borderRadius: 6, objectFit: "contain", background: "#fff", border: "1px solid var(--color-border-tertiary)" }} />
+          <span className="muted">Logo preview</span>
+        </div>
+      ) : null}
+
+      <label className="portfolioLabel">
         Location
         <input
           className="inputField"
@@ -138,10 +214,6 @@ export function CompanyProfileForm({ initial }: Props) {
           ))}
         </div>
       </fieldset>
-
-      <div className="muted" style={{ fontSize: 12 }}>
-        Logo upload is the next step and will be added to this page.
-      </div>
 
       {error ? (
         <p style={{ color: "#b91c1c", fontSize: 12 }} role="alert">

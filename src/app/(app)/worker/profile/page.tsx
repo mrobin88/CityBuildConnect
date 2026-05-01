@@ -96,7 +96,7 @@ export default async function WorkerProfilePage() {
           <div className="card">
             <div className="cardHeader">
               <span className="cardTitle">Digital resume</span>
-              <span className="tag tagGreen">HingeLine graduate profile</span>
+              <span className="tag tagGreen">Build Connect graduate profile</span>
             </div>
             <div className="cardBody" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div className="avatar avBlue" style={{ width: 56, height: 56, fontSize: 18 }}>
@@ -184,9 +184,9 @@ export default async function WorkerProfilePage() {
             <div className="cardHeader">
               <span className="cardTitle">Cert wallet</span>
             </div>
-            <div className="cardBody" style={{ paddingTop: 4, paddingBottom: 4 }}>
+            <div className="cardBody certWalletBody">
               {profile.certifications.length === 0 ? (
-                <div className="muted">Upload certs so employers can back you with confidence.</div>
+                <div className="muted certWalletHint">Upload certs so employers can verify you quickly.</div>
               ) : (
                 profile.certifications.map((c) => {
                   const st = certExpiryStatus(c.expiryDate);
@@ -222,7 +222,10 @@ export default async function WorkerProfilePage() {
                   );
                 })
               )}
-              <CertUploadForm />
+              <details className="certUploadDrawer" open={profile.certifications.length === 0}>
+                <summary className="certUploadDrawerToggle">Add certification</summary>
+                <CertUploadForm />
+              </details>
             </div>
           </div>
         </div>

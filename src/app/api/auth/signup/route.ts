@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import { inferEmployerBootstrapFromEmail } from "@/lib/company-enrichment";
 
 const allowedRoles = new Set<UserRole>(["WORKER", "EMPLOYER"]);
 
@@ -63,8 +64,25 @@ export async function POST(req: Request) {
         });
       }
 
+      if (role === "EMPLOYER") {
+        const inferred = inferEmployerBootstrapFromEmail(email);
+        await prisma.employerProfile.upsert({
+          where: { userId: existing.id },
+          update: {},
+          create: {
+            userId: existing.id,
+            companyName: inferred.companyName || fullName,
+            website: inferred.website,
+            logo: inferred.logo,
+            projectTypes: [],
+          },
+        });
+      }
+
       return NextResponse.json({ ok: true });
     }
+
+    const inferredEmployer = role === "EMPLOYER" ? inferEmployerBootstrapFromEmail(email) : null;
 
     await prisma.user.create({
       data: {
@@ -79,6 +97,17 @@ export async function POST(req: Request) {
             access_token: passwordHash,
           },
         },
+        employerProfile:
+          role === "EMPLOYER"
+            ? {
+                create: {
+                  companyName: inferredEmployer?.companyName || fullName,
+                  website: inferredEmployer?.website ?? null,
+                  logo: inferredEmployer?.logo ?? null,
+                  projectTypes: [],
+                },
+              }
+            : undefined,
       },
     });
 

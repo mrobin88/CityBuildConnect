@@ -1,6 +1,6 @@
-# CityBuildConnect
+# Build Connect
 
-CityBuildConnect is a Next.js app configured to run on Azure (not Vercel).
+Build Connect is a Next.js app configured to run on Azure (not Vercel).
 
 ## Local Development
 

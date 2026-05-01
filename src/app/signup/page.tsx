@@ -67,8 +67,8 @@ export default function SignupPage() {
         <Link href="/login" className="authBackLink">
           ← Back to sign in
         </Link>
-        <h1 className="authTitle">Create HingeLine account</h1>
-        <p className="muted authLead">Create your HingeLine account with email and password.</p>
+        <h1 className="authTitle">Create Build Connect account</h1>
+        <p className="muted authLead">Create your Build Connect account with email and password.</p>
 
         <form onSubmit={handleSignup} className="authForm">
           <label className="authLabel">

@@ -2,7 +2,7 @@ import { PrismaClient, UserRole, JobPostingStatus, ProjectType } from "@prisma/c
 
 const prisma = new PrismaClient();
 
-const SEED_EMAILS = ["worker@hingeline.local", "employer@hingeline.local", "admin@hingeline.local"] as const;
+const SEED_EMAILS = ["worker@buildconnect.local", "employer@buildconnect.local", "admin@buildconnect.local"] as const;
 
 async function clearSeedUsers() {
   const users = await prisma.user.findMany({
@@ -35,7 +35,7 @@ async function main() {
 
   const worker = await prisma.user.create({
     data: {
-      email: "worker@hingeline.local",
+      email: "worker@buildconnect.local",
       name: "Jose Medina",
       phone: "(415) 555-0101",
       location: "San Francisco, CA",
@@ -122,7 +122,7 @@ async function main() {
 
   const employer = await prisma.user.create({
     data: {
-      email: "employer@hingeline.local",
+      email: "employer@buildconnect.local",
       name: "Turner Construction (demo)",
       phone: "(415) 555-0202",
       location: "SoMa, San Francisco",
@@ -141,7 +141,7 @@ async function main() {
 
   await prisma.user.create({
     data: {
-      email: "admin@hingeline.local",
+      email: "admin@buildconnect.local",
       name: "Mission Hiring Hall Admin",
       phone: "(415) 555-0303",
       location: "Mission District, SF",

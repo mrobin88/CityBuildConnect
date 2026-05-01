@@ -16,8 +16,8 @@ export default async function HomePage() {
     <div className="marketingShell">
       <header className="marketingHeader">
         <div>
-          <div className="marketingBrand fxHingeBlink">HingeLine</div>
-          <div className="marketingSub">Union Workforce Signal Network</div>
+          <div className="marketingBrand fxSignalBlink">Build Connect</div>
+          <div className="marketingSub">Union Workforce Network</div>
         </div>
         <div className="marketingActions">
           <Link className="btnSecondary" href="/signup">
@@ -32,15 +32,13 @@ export default async function HomePage() {
       <main className="marketingMain">
         <section className="marketingHero">
           <p className="marketingKicker">Union workforce platform</p>
-          <h1 className="marketingTitle">
-            Connect skilled workers with the right job site, faster, with a sharper field ops signal.
-          </h1>
+          <h1 className="marketingTitle fxSignalHover">Connect skilled workers with the right job site, faster.</h1>
           <p className="marketingLead">
-            HingeLine gives employers a focused talent pipeline and gives workers a portable profile with certs, hours,
+            Build Connect gives employers a focused talent pipeline and gives workers a portable profile with certs, hours,
             portfolio, and messaging.
           </p>
           <div className="marketingActions">
-            <Link className="btnPrimary" href="/signup">
+            <Link className="btnPrimary fxSignalHover" href="/signup">
               Get started
             </Link>
             <Link className="btnSecondary" href="/login">

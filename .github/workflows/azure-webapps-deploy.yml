@@ -4,7 +4,7 @@
 #   - PROD_DATABASE_URL: production Postgres URL used by `prisma migrate deploy` during CI.
 #
 # Prerequisites (GitHub → Settings → Variables):
-#   - AZURE_WEBAPP_NAME: same as the `name` parameter in your ARM Web App (e.g. citybuild-connect).
+#   - AZURE_WEBAPP_NAME: same as the `name` parameter in your ARM Web App (e.g. build-connect).
 #   - AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID (OIDC service principal values)
 #
 # Azure Portal → Web App → Configuration → Application settings (runtime):

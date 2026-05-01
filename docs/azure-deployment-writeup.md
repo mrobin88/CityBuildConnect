@@ -1,6 +1,6 @@
-# CityBuildConnect Azure Deployment Write-Up
+# Build Connect Azure Deployment Write-Up
 
-This document defines the Azure-first setup for CityBuildConnect, including GitHub Actions, environment variables, App Service configuration, and the resource list to create in each Azure resource group.
+This document defines the Azure-first setup for Build Connect, including GitHub Actions, environment variables, App Service configuration, and the resource list to create in each Azure resource group.
 
 ## 1) Hosting Decision (Now)
 
@@ -19,12 +19,12 @@ This document defines the Azure-first setup for CityBuildConnect, including GitH
 
 Recommended one resource group per environment:
 
-- `rg-citybuild-connect-dev`
-- `rg-citybuild-connect-prod`
+- `rg-build-connect-dev`
+- `rg-build-connect-prod`
 
 Optional early pilot shortcut:
 
-- `rg-citybuild-connect-sandbox`
+- `rg-build-connect-sandbox`
 
 ## 4) Azure Resources to Add (In Order)
 

@@ -17,9 +17,9 @@
   --color-warning: #d9751f;
   --color-signal: #88929f;
 
-  --border-radius-sm: 4px;
-  --border-radius-md: 10px;
-  --border-radius-lg: 16px;
+  --border-radius-sm: 3px;
+  --border-radius-md: 7px;
+  --border-radius-lg: 11px;
 }
 
 * {
@@ -75,21 +75,23 @@ a {
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
-  color: #11151a;
-  border: none;
-  border-radius: 999px;
+  background: #161b21;
+  color: #f4f6f8;
+  border: 1px solid #2f3843;
+  border-radius: var(--border-radius-md);
   padding: 8px 14px;
   font-size: 12px;
   cursor: pointer;
   font-weight: 700;
   font-family: inherit;
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.16s ease, border-color 0.16s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 0 0.35px rgba(17, 21, 26, 0.6), 0 2px 6px rgba(20, 24, 30, 0.18);
+  box-shadow: inset 0 0 0 0.4px rgba(255, 255, 255, 0.08), 0 2px 0 rgba(20, 24, 30, 0.5);
 }
 
 .btnPrimary:disabled {
@@ -98,15 +100,16 @@ a {
 }
 
 .btnPrimary:hover {
-  background: linear-gradient(135deg, #d1a243, #f28a26);
+  background: #1f2731;
+  border-color: var(--color-accent);
   transform: translateY(-1px);
-  animation: hingeOpacityJitter 0.24s ease-out 1;
+  animation: signalJitter 0.18s steps(2, end) 1;
 }
 
 .btnSecondary {
   background: #f9fafb;
   border: 1px solid var(--color-border-secondary);
-  border-radius: 999px;
+  border-radius: var(--border-radius-md);
   padding: 8px 14px;
   font-size: 12px;
   cursor: pointer;
@@ -133,6 +136,7 @@ a {
 /* Marketing + auth surfaces */
 
 .marketingShell {
+  position: relative;
   min-height: 100vh;
   background:
     radial-gradient(circle at 8% 8%, rgba(198, 147, 47, 0.18), transparent 24%),
@@ -140,6 +144,15 @@ a {
     var(--color-background-tertiary);
   display: flex;
   flex-direction: column;
+}
+
+.marketingShell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 1px, transparent 1px, transparent 3px);
 }
 
 .marketingHeader {
@@ -154,12 +167,13 @@ a {
 }
 
 .marketingBrand {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 28px;
   line-height: 1.1;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 0.35px rgba(18, 23, 29, 0.8);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 1px 0 0 rgba(226, 127, 29, 0.35), -1px 0 0 rgba(0, 0, 0, 0.45);
 }
 
 .marketingSub {
@@ -177,10 +191,22 @@ a {
 
 .marketingHero {
   background: var(--color-background-primary);
-  border: 1px solid var(--color-border-tertiary);
+  border: 1px solid #b6bdc6;
   border-radius: var(--border-radius-lg);
   padding: 28px;
   box-shadow: 0 8px 18px rgba(24, 30, 38, 0.09);
+  position: relative;
+  overflow: hidden;
+}
+
+.marketingHero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-accent) 24%, var(--color-accent-strong) 64%, transparent 100%);
 }
 
 .marketingKicker {
@@ -226,18 +252,14 @@ a {
   border-radius: var(--border-radius-lg);
   padding: 18px 16px;
   box-shadow: inset 0 0 0 0.35px rgba(89, 99, 111, 0.35);
-  transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
 }
 
 .marketingCard:hover {
   transform: translateY(-1px);
-  box-shadow: inset 0 0 0 0.35px rgba(217, 117, 31, 0.55), 0 7px 14px rgba(24, 30, 38, 0.12);
-  animation: hingeOpacityJitter 0.22s ease-out 1;
-}
-
-.marketingCard:nth-child(odd) {
-  animation: hingeIdleFlicker 8.2s linear infinite;
-  animation-delay: 1.2s;
+  border-color: #9aa3af;
+  box-shadow: inset 0 0 0 0.35px rgba(217, 117, 31, 0.35), 0 7px 14px rgba(24, 30, 38, 0.12);
+  animation: signalJitter 0.18s steps(2, end) 1;
 }
 
 .marketingCard h2 {
@@ -272,69 +294,61 @@ a {
   box-shadow: 0 8px 18px rgba(24, 30, 38, 0.1);
 }
 
-.fxHingeBlink {
+.fxSignalBlink {
   display: inline-block;
-  animation: hingeBlinkPulse 4.8s ease-in-out infinite;
+  animation: signalBlink 3.8s steps(1, end) infinite;
 }
 
-.fxGlitchHover:hover {
-  animation: hingeOpacityJitter 0.22s ease-out 1;
+.fxSignalHover:hover {
+  animation: signalJitter 0.18s steps(2, end) 1;
 }
 
-@keyframes hingeBlinkPulse {
+@keyframes signalBlink {
   0%,
-  88%,
+  86%,
   100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(0, 0);
+    text-shadow: 1px 0 0 rgba(226, 127, 29, 0.35), -1px 0 0 rgba(0, 0, 0, 0.45);
+  }
+  88% {
+    opacity: 0.86;
+    transform: translate(-0.8px, 0);
+    text-shadow: 1px 0 0 rgba(226, 127, 29, 0.65), -1px 0 0 rgba(29, 120, 210, 0.55);
   }
   90% {
-    opacity: 0.82;
-    transform: translateX(-0.25px);
-  }
-  93% {
-    opacity: 0.96;
-    transform: translateX(0.25px);
+    opacity: 0.95;
+    transform: translate(0.8px, 0);
+    text-shadow: -1px 0 0 rgba(226, 127, 29, 0.65), 1px 0 0 rgba(29, 120, 210, 0.55);
   }
 }
 
-@keyframes hingeOpacityJitter {
+@keyframes signalJitter {
   0% {
     opacity: 1;
-    filter: saturate(1);
+    filter: contrast(1) saturate(1);
+    transform: translate(0, 0);
   }
-  35% {
-    opacity: 0.88;
-    filter: saturate(1.07);
-  }
-  70% {
-    opacity: 0.96;
-    filter: saturate(1.02);
-  }
-  100% {
-    opacity: 1;
-    filter: saturate(1);
-  }
-}
-
-@keyframes hingeIdleFlicker {
-  0%,
-  94%,
-  100% {
-    opacity: 1;
-  }
-  95% {
+  30% {
     opacity: 0.9;
+    filter: contrast(1.03) saturate(1.06);
+    transform: translate(-0.6px, 0);
   }
-  96% {
+  68% {
+    opacity: 0.96;
+    filter: contrast(1.01) saturate(1.02);
+    transform: translate(0.6px, 0);
+  }
+  100% {
     opacity: 1;
+    filter: contrast(1) saturate(1);
+    transform: translate(0, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fxHingeBlink,
-  .fxGlitchHover,
-  .marketingCard:nth-child(odd),
+  .fxSignalBlink,
+  .fxSignalHover,
   .btnPrimary:hover,
   .marketingCard:hover {
     animation: none !important;
@@ -755,23 +769,156 @@ a {
   min-width: 0;
   padding: 8px 10px;
   border-radius: var(--border-radius-md);
-  border: 0.5px solid var(--color-border-tertiary);
+  border: 1px solid var(--color-border-tertiary);
   font-size: 13px;
   font-family: inherit;
-  background: var(--color-background-primary);
+  background: #f7f8fa;
   color: var(--color-text-primary);
 }
 
 .certUploadInput:focus {
-  outline: 2px solid #185fa5;
+  outline: 2px solid rgba(226, 127, 29, 0.42);
   outline-offset: 1px;
 }
 
+.certWalletBody {
+  padding-top: 8px;
+  padding-bottom: 10px;
+}
+
+.certWalletHint {
+  max-width: 260px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.certUploadForm {
+  width: min(100%, 290px);
+  min-width: 0;
+  margin: 10px auto 0;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  background: #eceff3;
+  box-shadow: inset 0 0 0 0.4px rgba(19, 23, 29, 0.12);
+}
+
+.certUploadTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.certUploadLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.certUploadMeta {
+  font-size: 11px;
+}
+
+.certUploadDates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .certUploadFileInput {
+  display: block;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   font-size: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 6px;
+  background: #f7f8fa;
+}
+
+.certUploadFileInput::file-selector-button {
+  margin-right: 8px;
+  border: 1px solid #28303a;
+  border-radius: var(--border-radius-sm);
+  background: #1c232c;
+  color: #f4f6f8;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+
+.certUploadButton {
+  width: 100%;
+}
+
+.certUploadDrawer {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  background: #e8ecf1;
+  padding: 6px;
+}
+
+.certUploadDrawer[open] {
+  box-shadow: inset 0 0 0 0.4px rgba(19, 23, 29, 0.18);
+}
+
+.certUploadDrawerToggle {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.certUploadDrawerToggle::after {
+  content: "+";
+  font-size: 14px;
+  line-height: 1;
+}
+
+.certUploadDrawer[open] .certUploadDrawerToggle::after {
+  content: "−";
+}
+
+.certUploadDrawerToggle::-webkit-details-marker {
+  display: none;
+}
+
+.certUploadStatus {
+  font-size: 12px;
+}
+
+.certUploadStatusOk {
+  color: #166534;
+}
+
+.certUploadStatusErr {
+  color: #b91c1c;
+}
+
+@media (max-width: 440px) {
+  .certUploadDates {
+    grid-template-columns: 1fr;
+  }
 }
 
 .certDocLink {

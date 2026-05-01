@@ -81,7 +81,9 @@ export default function LoginPage() {
         redirect: false,
       });
       if (res?.error) {
-        setError("Could not sign in. Seed the DB and use worker@hingeline.local, employer@hingeline.local, or admin@hingeline.local.");
+        setError(
+          "Could not sign in. Seed the DB and use worker@buildconnect.local, employer@buildconnect.local, or admin@buildconnect.local."
+        );
         setLoading(false);
         return;
       }
@@ -129,8 +131,8 @@ export default function LoginPage() {
         <Link href="/" className="authBackLink">
           ← Back
         </Link>
-        <h1 className="authTitle">Sign in to HingeLine</h1>
-        <p className="muted authLead">Use email and password to sign in to the HingeLine network.</p>
+        <h1 className="authTitle">Sign in to Build Connect</h1>
+        <p className="muted authLead">Use email and password to sign in to the Build Connect network.</p>
 
         {passwordAvailable ? (
           <form onSubmit={handlePasswordSignIn} className="authForm">
@@ -180,7 +182,7 @@ export default function LoginPage() {
                 type="email"
                 value={devEmail}
                 onChange={(e) => setDevEmail(e.target.value)}
-                placeholder="worker@hingeline.local"
+                placeholder="worker@buildconnect.local"
                 required
                 className="inputField"
               />
@@ -228,7 +230,7 @@ export default function LoginPage() {
             ) : null}
             {!googleAvailable && !emailAvailable ? (
               <p className="muted" style={{ fontSize: 12 }}>
-                OAuth and email login are not configured yet.
+                Additional sign-in methods are currently disabled for this environment.
               </p>
             ) : null}
           </div>

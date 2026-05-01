@@ -41,10 +41,10 @@ export function CertUploadForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ display: "grid", gap: 10, marginTop: 12, width: "100%", minWidth: 0 }}>
-      <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-text-primary)" }}>Upload a cert</div>
-      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span className="muted" style={{ fontSize: 11 }}>
+    <form onSubmit={onSubmit} className="certUploadForm">
+      <div className="certUploadTitle">Upload a cert</div>
+      <label className="certUploadLabel">
+        <span className="muted certUploadMeta">
           Name (e.g. OSHA 30)
         </span>
         <input
@@ -56,28 +56,28 @@ export function CertUploadForm() {
           disabled={pending}
         />
       </label>
-      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span className="muted" style={{ fontSize: 11 }}>
+      <label className="certUploadLabel">
+        <span className="muted certUploadMeta">
           Issuing body (optional)
         </span>
         <input name="issuingBody" maxLength={120} className="certUploadInput" placeholder="OSHA" disabled={pending} />
       </label>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span className="muted" style={{ fontSize: 11 }}>
+      <div className="certUploadDates">
+        <label className="certUploadLabel">
+          <span className="muted certUploadMeta">
             Issue date
           </span>
           <input name="issueDate" type="date" className="certUploadInput" disabled={pending} />
         </label>
-        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span className="muted" style={{ fontSize: 11 }}>
+        <label className="certUploadLabel">
+          <span className="muted certUploadMeta">
             Expiry date
           </span>
           <input name="expiryDate" type="date" className="certUploadInput" disabled={pending} />
         </label>
       </div>
-      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span className="muted" style={{ fontSize: 11 }}>
+      <label className="certUploadLabel">
+        <span className="muted certUploadMeta">
           File (PDF, JPEG, PNG, WebP — max 10 MB)
         </span>
         <input
@@ -90,11 +90,11 @@ export function CertUploadForm() {
         />
       </label>
       {message ? (
-        <p style={{ fontSize: 12, color: message.type === "ok" ? "#166534" : "#b91c1c" }} role="status">
+        <p className={`certUploadStatus ${message.type === "ok" ? "certUploadStatusOk" : "certUploadStatusErr"}`} role="status">
           {message.text}
         </p>
       ) : null}
-      <button type="submit" className="btnPrimary" disabled={pending} style={{ width: "100%" }}>
+      <button type="submit" className="btnPrimary certUploadButton" disabled={pending}>
         {pending ? "Uploading…" : "Upload certification"}
       </button>
     </form>

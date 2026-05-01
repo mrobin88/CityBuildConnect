@@ -21,6 +21,7 @@ async function EmployerCompanyProfileData() {
         companyName: true,
         licenseNumber: true,
         website: true,
+        logo: true,
         projectTypes: true,
       },
     }),
@@ -34,6 +35,7 @@ async function EmployerCompanyProfileData() {
     companyName: profile?.companyName ?? user?.name ?? "",
     licenseNumber: profile?.licenseNumber ?? null,
     website: profile?.website ?? null,
+    logo: profile?.logo ?? null,
     location: user?.location ?? null,
     projectTypes: profile?.projectTypes ?? [],
   };

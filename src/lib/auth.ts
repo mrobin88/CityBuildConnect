@@ -69,7 +69,7 @@ function devCredentialsProvider() {
     id: "dev-credentials",
     name: "Dev login",
     credentials: {
-      email: { label: "Email", type: "email", placeholder: "worker@hingeline.local" },
+      email: { label: "Email", type: "email", placeholder: "worker@buildconnect.local" },
     },
     async authorize(credentials) {
       const email = credentials?.email?.toLowerCase().trim();

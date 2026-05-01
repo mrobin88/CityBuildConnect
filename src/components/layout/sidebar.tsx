@@ -30,7 +30,7 @@ export function Sidebar({ role, userLabel }: SidebarProps) {
     <>
       <div className={styles.mobileTopBar}>
         <div className={styles.mobileBrandWrap}>
-          <div className={styles.mobileBrand}>HingeLine</div>
+          <div className={styles.mobileBrand}>Build Connect</div>
           <div className={styles.mobileSub}>Mission Hiring Hall</div>
         </div>
         <button
@@ -46,7 +46,7 @@ export function Sidebar({ role, userLabel }: SidebarProps) {
 
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <div className={styles.logoMark}>HingeLine</div>
+          <div className={styles.logoMark}>Build Connect</div>
           <div className={styles.logoSub}>Mission Hiring Hall</div>
         </div>
 

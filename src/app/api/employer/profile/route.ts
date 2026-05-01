@@ -87,6 +87,7 @@ export async function POST(req: Request) {
   const website = normalizeOptionalString(body.website, 300);
   const location = normalizeOptionalString(body.location, 120);
   const projectTypes = normalizeProjectTypes(body.projectTypes);
+  const logo = normalizeOptionalString(body.logo, 500);
 
   if (!companyName) {
     return NextResponse.json({ error: "Organization name is required." }, { status: 400 });
@@ -94,6 +95,9 @@ export async function POST(req: Request) {
 
   if (!isValidHttpUrl(website)) {
     return NextResponse.json({ error: "Website must start with http:// or https://" }, { status: 400 });
+  }
+  if (!isValidHttpUrl(logo)) {
+    return NextResponse.json({ error: "Logo URL must start with http:// or https://" }, { status: 400 });
   }
 
   await Promise.all([
@@ -103,6 +107,7 @@ export async function POST(req: Request) {
         companyName,
         licenseNumber,
         website,
+        logo,
         projectTypes,
       },
       create: {
@@ -110,6 +115,7 @@ export async function POST(req: Request) {
         companyName,
         licenseNumber,
         website,
+        logo,
         projectTypes,
       },
     }),
