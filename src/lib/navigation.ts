@@ -43,10 +43,7 @@ const employerNav: NavSection[] = [
   },
   {
     heading: "Account",
-    items: [
-      { href: "/employer/company", label: "Organization profile" },
-      { href: "/employer/settings", label: "Settings" },
-    ],
+    items: [{ href: "/employer/company", label: "Organization profile" }],
   },
 ];
 
