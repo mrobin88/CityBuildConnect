@@ -30,10 +30,13 @@ export function CompanyProfileForm({ initial }: Props) {
   const [location, setLocation] = useState(initial.location ?? "");
   const [lookupInput, setLookupInput] = useState(initial.website ?? initial.companyName ?? "");
   const [lookupBusy, setLookupBusy] = useState(false);
-  const [lookupMessage, setLookupMessage] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [projectTypes, setProjectTypes] = useState<Set<ProjectType>>(new Set(initial.projectTypes));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const logoPreviewSrc = logo.startsWith("local:") || logo.startsWith("azure:") ? "/api/employer/profile/logo" : logo;
 
   function toggleProjectType(value: ProjectType) {
     setProjectTypes((prev) => {
@@ -46,11 +49,10 @@ export function CompanyProfileForm({ initial }: Props) {
 
   async function runCompanyLookup() {
     if (!lookupInput.trim()) {
-      setLookupMessage("Enter a company website, domain, or email first.");
       return;
     }
     setLookupBusy(true);
-    setLookupMessage(null);
+    setError(null);
     try {
       const res = await fetch(`/api/company/enrich?q=${encodeURIComponent(lookupInput.trim())}`, { method: "GET" });
       const data = (await res.json().catch(() => ({}))) as {
@@ -60,15 +62,14 @@ export function CompanyProfileForm({ initial }: Props) {
         suggestedLogo?: string | null;
       };
       if (!res.ok) {
-        setLookupMessage(data.error ?? "Could not look up company details.");
+        setError("Could not look up company details.");
         return;
       }
       if (data.companyName) setCompanyName(data.companyName);
       if (data.website) setWebsite(data.website);
       if (data.suggestedLogo) setLogo(data.suggestedLogo);
-      setLookupMessage("Company info applied. Review and save.");
     } catch {
-      setLookupMessage("Could not look up company details.");
+      setError("Could not look up company details.");
     } finally {
       setLookupBusy(false);
     }
@@ -106,26 +107,48 @@ export function CompanyProfileForm({ initial }: Props) {
     }
   }
 
+  async function uploadLogoFile() {
+    if (!logoFile) return;
+    setError(null);
+    setUploadingLogo(true);
+    try {
+      const fd = new FormData();
+      fd.set("file", logoFile);
+      const res = await fetch("/api/employer/profile/logo", {
+        method: "POST",
+        body: fd,
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string; logo?: string };
+      if (!res.ok || !data.logo) {
+        setError(data.error ?? "Could not upload logo image.");
+        return;
+      }
+      setLogo(data.logo);
+      setLogoFile(null);
+    } catch {
+      setError("Could not upload logo image.");
+    } finally {
+      setUploadingLogo(false);
+    }
+  }
+
   return (
     <form className="cardBody" onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
       <fieldset style={{ border: 0, padding: 0, margin: 0, display: "grid", gap: 8 }}>
-        <legend className="muted" style={{ marginBottom: 2 }}>
-          Company lookup
-        </legend>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
             className="inputField"
             style={{ flex: 1, minWidth: 220 }}
+            type="search"
             value={lookupInput}
             onChange={(e) => setLookupInput(e.target.value)}
-            placeholder="example.com or contact@company.com"
+            placeholder="Search by website, domain, or email"
             disabled={saving || lookupBusy}
           />
           <button type="button" className="btnSecondary" onClick={() => void runCompanyLookup()} disabled={saving || lookupBusy}>
             {lookupBusy ? "Finding..." : "Autofill"}
           </button>
         </div>
-        {lookupMessage ? <div className="muted">{lookupMessage}</div> : null}
       </fieldset>
 
       <label className="portfolioLabel">
@@ -141,25 +164,25 @@ export function CompanyProfileForm({ initial }: Props) {
       </label>
 
       <label className="portfolioLabel">
-        License / registration number
+        License number (optional)
         <input
           className="inputField"
           value={licenseNumber}
           onChange={(e) => setLicenseNumber(e.target.value)}
           maxLength={120}
-          placeholder="Optional"
           disabled={saving}
         />
       </label>
 
       <label className="portfolioLabel">
-        Website
+        Website / domain
         <input
           className="inputField"
+          type="search"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
           maxLength={300}
-          placeholder="https://example.org"
+          placeholder="Search or paste website/domain"
           disabled={saving}
         />
       </label>
@@ -176,10 +199,34 @@ export function CompanyProfileForm({ initial }: Props) {
         />
       </label>
 
+      <div className="portfolioLabel" style={{ display: "grid", gap: 6 }}>
+        <span>Upload logo image</span>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+          <input
+            className="inputField"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+            disabled={saving || uploadingLogo}
+          />
+          <button
+            type="button"
+            className="btnSecondary"
+            onClick={() => void uploadLogoFile()}
+            disabled={!logoFile || saving || uploadingLogo}
+          >
+            {uploadingLogo ? "Uploading..." : "Upload logo"}
+          </button>
+        </div>
+        <div className="muted" style={{ fontSize: 12 }}>
+          JPEG, PNG, or WebP up to 6 MB.
+        </div>
+      </div>
+
       {logo ? (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo} alt="Company logo preview" style={{ width: 42, height: 42, borderRadius: 6, objectFit: "contain", background: "#fff", border: "1px solid var(--color-border-tertiary)" }} />
+          <img src={logoPreviewSrc} alt="Company logo preview" style={{ width: 42, height: 42, borderRadius: 6, objectFit: "contain", background: "#fff", border: "1px solid var(--color-border-tertiary)" }} />
           <span className="muted">Logo preview</span>
         </div>
       ) : null}

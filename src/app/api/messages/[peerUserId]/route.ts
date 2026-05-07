@@ -34,7 +34,7 @@ export async function GET(_req: Request, { params }: Ctx) {
     },
   });
 
-  if (!peer || !canExchangeDirectMessages(myRole, peer.role)) {
+  if (!peer || !(await canExchangeDirectMessages(prisma, me, myRole, peer.id, peer.role))) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

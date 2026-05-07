@@ -8,6 +8,7 @@ import {
   loadPortfolioImage,
   savePortfolioImage,
 } from "@/lib/portfolio-storage";
+import { compressImageToMaxBytes, isCompressibleImageMime } from "@/lib/image-compression";
 
 export const runtime = "nodejs";
 
@@ -64,10 +65,6 @@ export async function POST(request: Request, { params }: Ctx) {
   if (!(file instanceof File) || file.size === 0) {
     return NextResponse.json({ error: "Image file required." }, { status: 400 });
   }
-  if (file.size > MAX_PORTFOLIO_IMAGE_BYTES) {
-    return NextResponse.json({ error: "Image too large (max 8 MB)." }, { status: 400 });
-  }
-
   const extFromName = (() => {
     const n = file.name.split(".").pop()?.toLowerCase();
     if (n === "jpg" || n === "jpeg") return { mime: "image/jpeg" as const, ext: "jpg" as const };
@@ -87,7 +84,19 @@ export async function POST(request: Request, { params }: Ctx) {
     return NextResponse.json({ error: "Use JPEG, PNG, or WebP." }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const originalBuffer = Buffer.from(await file.arrayBuffer());
+  let buffer = originalBuffer;
+  if (buffer.length > MAX_PORTFOLIO_IMAGE_BYTES && isCompressibleImageMime(mimeType)) {
+    const compressed = await compressImageToMaxBytes(buffer, MAX_PORTFOLIO_IMAGE_BYTES);
+    if (compressed) {
+      buffer = Buffer.from(compressed);
+      mimeType = "image/webp";
+      ext = "webp";
+    }
+  }
+  if (buffer.length > MAX_PORTFOLIO_IMAGE_BYTES) {
+    return NextResponse.json({ error: "Image too large after compression (max 8 MB)." }, { status: 400 });
+  }
 
   try {
     const imageUrl = await savePortfolioImage(session.user.id, item.id, buffer, mimeType, ext);

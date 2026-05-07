@@ -10,6 +10,7 @@ import { JobSitesManager, type JobSiteRow } from "@/components/worker/job-sites-
 import { PortfolioManager, type PortfolioRow } from "@/components/worker/portfolio-manager";
 import { ProfileVisibilityToggle } from "@/components/worker/profile-visibility-toggle";
 import { ShareProfileButton } from "@/components/worker/share-profile-button";
+import { ProfilePhotoUploader } from "@/components/worker/profile-photo-uploader";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,11 @@ export default async function WorkerProfilePage() {
   }));
 
   const jobSiteOptions = profile.jobSiteExperiences.map((j) => ({ id: j.id, projectName: j.projectName }));
+  const workerPhotoSrc = profile.profilePhoto
+    ? profile.profilePhoto.startsWith("http://") || profile.profilePhoto.startsWith("https://")
+      ? profile.profilePhoto
+      : `/api/worker/profile/${encodeURIComponent(profile.userId)}/photo`
+    : null;
 
   return (
     <div className="pageStack">
@@ -99,14 +105,23 @@ export default async function WorkerProfilePage() {
               <span className="tag tagGreen">Build Connect graduate profile</span>
             </div>
             <div className="cardBody" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-              <div className="avatar avBlue" style={{ width: 56, height: 56, fontSize: 18 }}>
-                {(profile.user.name ?? "?")
-                  .split(/\s+/)
-                  .map((p) => p[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase()}
-              </div>
+              {workerPhotoSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={workerPhotoSrc}
+                  alt={`${profile.user.name ?? "Worker"} profile photo`}
+                  style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)" }}
+                />
+              ) : (
+                <div className="avatar avBlue" style={{ width: 56, height: 56, fontSize: 18 }}>
+                  {(profile.user.name ?? "?")
+                    .split(/\s+/)
+                    .map((p) => p[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()}
+                </div>
+              )}
               <div style={{ flex: 1 }}>
                 <div className="workerName" style={{ fontSize: 16 }}>
                   {profile.user.name}
@@ -136,6 +151,9 @@ export default async function WorkerProfilePage() {
                   ) : null}
                 </div>
               </div>
+            </div>
+            <div className="cardBody" style={{ paddingTop: 0 }}>
+              <ProfilePhotoUploader currentPhoto={profile.profilePhoto} workerId={profile.userId} />
             </div>
             <div className="cardBody" style={{ paddingTop: 0 }}>
               <ProfileVisibilityToggle initialIsPublic={profile.isPublic} />

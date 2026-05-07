@@ -18,7 +18,7 @@ export default async function EmployerBrowsePage() {
   if (!session?.user) redirect("/login");
   if (session.user.role !== "EMPLOYER") redirect(defaultHomeForRole(session.user.role));
 
-  const [workersRaw, jobsRaw, placementsYtd, hoursAgg, rosterIds] = await Promise.all([
+  const [workersRaw, jobsRaw, placementsYtd, hoursAgg] = await Promise.all([
     prisma.workerProfile.findMany({
       where: { isPublic: true },
       include: {
@@ -39,10 +39,6 @@ export default async function EmployerBrowsePage() {
       where: { status: "HIRED", createdAt: { gte: new Date(new Date().getFullYear(), 0, 1) } },
     }),
     prisma.workerProfile.aggregate({ _avg: { totalHours: true } }),
-    prisma.employerRosterEntry.findMany({
-      where: { employerId: session.user.id, archived: false },
-      select: { workerId: true },
-    }),
   ]);
 
   const workers: BrowseWorkerRow[] = workersRaw.map((w) => ({
@@ -52,6 +48,7 @@ export default async function EmployerBrowsePage() {
     apprenticeYear: w.apprenticeYear,
     totalHours: w.totalHours,
     certNames: w.certifications.map((c) => c.name),
+    profilePhoto: w.profilePhoto,
   }));
 
   const jobs: BrowseJobRow[] = await Promise.all(
@@ -106,7 +103,6 @@ export default async function EmployerBrowsePage() {
       jobs={jobs}
       stats={stats}
       certPreview={certPreview}
-      initialRosterWorkerIds={rosterIds.map((r) => r.workerId)}
     />
   );
 }

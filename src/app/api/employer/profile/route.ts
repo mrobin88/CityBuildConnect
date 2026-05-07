@@ -26,6 +26,7 @@ function normalizeProjectTypes(value: unknown): ProjectType[] {
 
 function isValidHttpUrl(value: string | null): boolean {
   if (!value) return true;
+  if (value.startsWith("local:") || value.startsWith("azure:")) return true;
   try {
     const parsed = new URL(value);
     return parsed.protocol === "http:" || parsed.protocol === "https:";

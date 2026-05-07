@@ -30,7 +30,11 @@ type Props = {
   postings: EmployerPostingRow[];
 };
 
-const statusActions: ApplicationStatus[] = ["INTERESTED", "INTERVIEW", "OFFER", "HIRED", "DECLINED"];
+const statusActions: Array<{ value: ApplicationStatus; label: string }> = [
+  { value: "INTERESTED", label: "Interested" },
+  { value: "DECLINED", label: "Pass" },
+  { value: "HIRED", label: "Hired" },
+];
 
 export function EmployerPostingsClient({ postings }: Props) {
   const [items, setItems] = useState(postings);
@@ -170,7 +174,7 @@ export function EmployerPostingsClient({ postings }: Props) {
 
           {items.length === 0 ? (
             <div className="card">
-              <div className="cardBody muted">No postings yet. Create an opening and help someone step into their next chapter.</div>
+              <div className="cardBody muted">No postings yet. Create your first opening to collect candidate interest.</div>
             </div>
           ) : (
             items.map((posting) => (
@@ -194,7 +198,7 @@ export function EmployerPostingsClient({ postings }: Props) {
                   </div>
 
                   {posting.applications.length === 0 ? (
-                    <p className="muted">No applicants yet.</p>
+                    <p className="muted">No interested workers yet.</p>
                   ) : (
                     posting.applications.map((app) => (
                       <div key={app.id} className="workerCard" style={{ paddingInline: 0 }}>
@@ -215,13 +219,13 @@ export function EmployerPostingsClient({ postings }: Props) {
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
                           {statusActions.map((status) => (
                             <button
-                              key={status}
+                              key={status.value}
                               type="button"
                               className="btnSecondary"
-                              disabled={app.status === status || statusBusyId === app.id}
-                              onClick={() => updateApplicationStatus(app.id, status)}
+                              disabled={app.status === status.value || statusBusyId === app.id}
+                              onClick={() => updateApplicationStatus(app.id, status.value)}
                             >
-                              {status.toLowerCase()}
+                              {status.label}
                             </button>
                           ))}
                         </div>

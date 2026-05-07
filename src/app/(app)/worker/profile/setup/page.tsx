@@ -12,6 +12,7 @@ export default function WorkerProfileSetupPage() {
   const [availableFrom, setAvailableFrom] = useState("");
   const [bio, setBio] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -37,6 +38,19 @@ export default function WorkerProfileSetupPage() {
       if (!res.ok) {
         setError(data.error ?? "Could not save profile.");
         return;
+      }
+      if (profileImageFile) {
+        const fd = new FormData();
+        fd.set("file", profileImageFile);
+        const photoRes = await fetch("/api/worker/profile/photo", {
+          method: "POST",
+          body: fd,
+        });
+        const photoData = (await photoRes.json().catch(() => ({}))) as { error?: string };
+        if (!photoRes.ok) {
+          setError(photoData.error ?? "Profile saved, but photo upload failed.");
+          return;
+        }
       }
       router.push("/worker/profile");
       router.refresh();
@@ -104,6 +118,17 @@ export default function WorkerProfileSetupPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
+              <label className="muted" style={{ display: "grid", gap: 4 }}>
+                Profile photo
+                <input
+                  className="inputField"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={(e) => setProfileImageFile(e.target.files?.[0] ?? null)}
+                  disabled={saving}
+                />
+                <span style={{ fontSize: 12 }}>JPEG, PNG, or WebP up to 6 MB.</span>
+              </label>
               <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} disabled={saving} />
                 <span>List my profile in worker directory</span>

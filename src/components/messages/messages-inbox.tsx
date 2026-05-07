@@ -228,8 +228,8 @@ export function MessagesInbox({ basePath }: Props) {
               {basePath.startsWith("/employer") ? (
                 <>
                   Start one from{" "}
-                  <Link href="/employer/browse" className="certDocLink">
-                    Browse workers
+                  <Link href="/employer/postings" className="certDocLink">
+                    Job postings
                   </Link>
                   .
                 </>
@@ -261,7 +261,7 @@ export function MessagesInbox({ basePath }: Props) {
         <section className="msgThreadPane">
           {!peerId ? (
             <div className="muted msgPad" style={{ marginTop: 24 }}>
-              Select a conversation or open a thread from Browse workers.
+              Select a conversation or open a thread from your job applicants.
             </div>
           ) : (
             <>

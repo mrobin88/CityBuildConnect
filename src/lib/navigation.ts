@@ -24,11 +24,10 @@ const workerNav: NavSection[] = [
 
 const employerNav: NavSection[] = [
   {
-    heading: "Discover",
+    heading: "Hiring",
     items: [
-      { href: "/employer/browse", label: "Browse workers" },
       { href: "/employer/postings", label: "Job postings" },
-      { href: "/employer/saved", label: "Talent list" },
+      { href: "/employer/browse", label: "Worker directory" },
     ],
   },
   {
@@ -38,7 +37,6 @@ const employerNav: NavSection[] = [
   {
     heading: "Manage",
     items: [
-      { href: "/employer/crew", label: "Roster" },
       { href: "/employer/hours", label: "Activity log" },
       { href: "/employer/contracts", label: "Documents" },
     ],

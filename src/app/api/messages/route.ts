@@ -48,7 +48,10 @@ export async function POST(request: Request) {
     },
   });
 
-  if (!peer || !canExchangeDirectMessages(myRole, peer.role)) {
+  if (
+    !peer ||
+    !(await canExchangeDirectMessages(prisma, session.user.id, myRole, peer.id, peer.role))
+  ) {
     return NextResponse.json({ error: "Cannot message this user" }, { status: 403 });
   }
 

@@ -65,7 +65,7 @@ export async function GET() {
     const peerId = m.fromId === me ? m.toId : m.fromId;
     if (seen.has(peerId)) continue;
     const peer = m.fromId === me ? m.to : m.from;
-    if (!canExchangeDirectMessages(myRole, peer.role)) continue;
+    if (!(await canExchangeDirectMessages(prisma, me, myRole, peer.id, peer.role))) continue;
     seen.add(peerId);
 
     const unreadCount = await prisma.message.count({

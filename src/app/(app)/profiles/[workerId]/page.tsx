@@ -35,6 +35,11 @@ export default async function WorkerPublicProfilePage({ params }: PageProps) {
   if (!profile.isPublic && session.user.id !== profile.userId) {
     notFound();
   }
+  const workerPhotoSrc = profile.profilePhoto
+    ? profile.profilePhoto.startsWith("http://") || profile.profilePhoto.startsWith("https://")
+      ? profile.profilePhoto
+      : `/api/worker/profile/${encodeURIComponent(profile.userId)}/photo`
+    : null;
 
   return (
     <div className="pageStack">
@@ -50,6 +55,14 @@ export default async function WorkerPublicProfilePage({ params }: PageProps) {
               <span className="muted">{profile.trade}</span>
             </div>
             <div className="cardBody">
+              {workerPhotoSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={workerPhotoSrc}
+                  alt={`${profile.user.name ?? "Worker"} profile photo`}
+                  style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)", marginBottom: 10 }}
+                />
+              ) : null}
               <div className="workerTrade">
                 {profile.trade}
                 {profile.apprenticeYear != null ? ` · Year ${profile.apprenticeYear}` : ""}

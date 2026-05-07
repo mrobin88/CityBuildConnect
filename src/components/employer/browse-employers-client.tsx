@@ -12,6 +12,7 @@ export type BrowseWorkerRow = {
   apprenticeYear: number | null;
   totalHours: number;
   certNames: string[];
+  profilePhoto: string | null;
 };
 
 export type BrowseJobRow = {
@@ -35,7 +36,6 @@ type Props = {
   jobs: BrowseJobRow[];
   stats: BrowseStats;
   certPreview: { name: string; expiryLabel: string; status: "green" | "amber" }[];
-  initialRosterWorkerIds: string[];
 };
 
 const AVATAR_CLASS = ["avBlue", "avTeal", "avAmber", "avPurple"] as const;
@@ -48,15 +48,18 @@ function initials(name: string | null): string {
   return (parts[0]![0] + parts[parts.length - 1]![0]).toUpperCase();
 }
 
-export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initialRosterWorkerIds }: Props) {
+function workerPhotoSrc(profilePhoto: string | null, userId: string): string | null {
+  if (!profilePhoto) return null;
+  if (profilePhoto.startsWith("http://") || profilePhoto.startsWith("https://")) return profilePhoto;
+  return `/api/worker/profile/${encodeURIComponent(userId)}/photo`;
+}
+
+export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Props) {
   const router = useRouter();
   const [trade, setTrade] = useState("All trades");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [rosterWorkerIds, setRosterWorkerIds] = useState<Set<string>>(new Set(initialRosterWorkerIds));
-  const [busyAddWorkerId, setBusyAddWorkerId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
@@ -76,33 +79,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
   const visibleWorkers = filtered.slice(0, visibleCount);
   const hasMoreWorkers = visibleWorkers.length < filtered.length;
   const featuredWorker = visibleWorkers[0];
-
-  async function addToRoster(workerId: string) {
-    if (rosterWorkerIds.has(workerId)) return;
-    setError(null);
-    setBusyAddWorkerId(workerId);
-    try {
-      const res = await fetch("/api/employer/roster", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workerId }),
-      });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) {
-        setError(data.error ?? "Could not add worker to roster.");
-        return;
-      }
-      setRosterWorkerIds((prev) => {
-        const next = new Set(prev);
-        next.add(workerId);
-        return next;
-      });
-    } catch {
-      setError("Could not add worker to roster.");
-    } finally {
-      setBusyAddWorkerId(null);
-    }
-  }
+  const featuredWorkerPhoto = featuredWorker ? workerPhotoSrc(featuredWorker.profilePhoto, featuredWorker.userId) : null;
 
   return (
     <div className="pageStack">
@@ -146,14 +123,6 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
             </div>
           </div>
 
-          {error ? (
-            <div className="card">
-              <div className="cardBody">
-                <p style={{ color: "#b91c1c", fontSize: 12 }}>{error}</p>
-              </div>
-            </div>
-          ) : null}
-
           {featuredWorker ? (
             <div className="card">
               <div className="cardHeader">
@@ -161,9 +130,18 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
                 <span className="muted">Someone ready for a real shot</span>
               </div>
               <div className="cardBody" style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                <div className={`avatar ${AVATAR_CLASS[0]}`} style={{ width: 48, height: 48 }}>
-                  {initials(featuredWorker.name)}
-                </div>
+                {featuredWorkerPhoto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={featuredWorkerPhoto}
+                    alt=""
+                    style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)" }}
+                  />
+                ) : (
+                  <div className={`avatar ${AVATAR_CLASS[0]}`} style={{ width: 48, height: 48 }}>
+                    {initials(featuredWorker.name)}
+                  </div>
+                )}
                 <div style={{ flex: 1 }}>
                   <div className="workerName" style={{ fontSize: 15 }}>
                     {featuredWorker.name ?? "Worker"}
@@ -198,15 +176,6 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
                   >
                     View profile
                   </Link>
-                  <button
-                    type="button"
-                    className="btnSecondary"
-                    style={{ fontSize: 12, padding: "7px 12px" }}
-                    onClick={() => void addToRoster(featuredWorker.userId)}
-                    disabled={rosterWorkerIds.has(featuredWorker.userId) || busyAddWorkerId === featuredWorker.userId}
-                  >
-                    {rosterWorkerIds.has(featuredWorker.userId) ? "In roster" : busyAddWorkerId === featuredWorker.userId ? "Adding..." : "Add to roster"}
-                  </button>
                 </div>
               </div>
             </div>
@@ -247,7 +216,16 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
                     }
                   }}
                 >
-                  <div className={`avatar ${AVATAR_CLASS[i % AVATAR_CLASS.length]}`}>{initials(w.name)}</div>
+                  {workerPhotoSrc(w.profilePhoto, w.userId) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={workerPhotoSrc(w.profilePhoto, w.userId) ?? ""}
+                      alt=""
+                      style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)" }}
+                    />
+                  ) : (
+                    <div className={`avatar ${AVATAR_CLASS[i % AVATAR_CLASS.length]}`}>{initials(w.name)}</div>
+                  )}
                   <div className="workerInfo">
                     <div className="workerName">{w.name ?? "Worker"}</div>
                     <div className="workerTrade">
@@ -284,18 +262,6 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview, initi
                     >
                       Message
                     </Link>
-                    <button
-                      type="button"
-                      className="btnSecondary"
-                      style={{ fontSize: 11, padding: "5px 10px" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void addToRoster(w.userId);
-                      }}
-                      disabled={rosterWorkerIds.has(w.userId) || busyAddWorkerId === w.userId}
-                    >
-                      {rosterWorkerIds.has(w.userId) ? "In roster" : busyAddWorkerId === w.userId ? "Adding..." : "Add to roster"}
-                    </button>
                   </div>
                 </div>
               ))

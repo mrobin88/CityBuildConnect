@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ALLOWED_CERT_MIME, MAX_CERT_BYTES, saveCertFile } from "@/lib/cert-storage";
+import { compressImageToMaxBytes, isCompressibleImageMime } from "@/lib/image-compression";
 
 export const runtime = "nodejs";
 
@@ -46,10 +47,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A file is required." }, { status: 400 });
   }
 
-  if (file.size > MAX_CERT_BYTES) {
-    return NextResponse.json({ error: `File too large (max ${MAX_CERT_BYTES / (1024 * 1024)} MB).` }, { status: 400 });
-  }
-
   const extFromName = (() => {
     const n = file.name.split(".").pop()?.toLowerCase();
     if (n === "pdf") return { mime: "application/pdf" as const, ext: "pdf" as const };
@@ -73,7 +70,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const originalBuffer = Buffer.from(await file.arrayBuffer());
+  let buffer = originalBuffer;
+  if (buffer.length > MAX_CERT_BYTES && isCompressibleImageMime(mimeType)) {
+    const compressed = await compressImageToMaxBytes(buffer, MAX_CERT_BYTES);
+    if (compressed) {
+      buffer = Buffer.from(compressed);
+      mimeType = "image/webp";
+      ext = "webp";
+    }
+  }
+  if (buffer.length > MAX_CERT_BYTES) {
+    return NextResponse.json({ error: `File too large (max ${MAX_CERT_BYTES / (1024 * 1024)} MB).` }, { status: 400 });
+  }
 
   const issueDate = parseOptionalDate(formData.get("issueDate"));
   const expiryDate = parseOptionalDate(formData.get("expiryDate"));

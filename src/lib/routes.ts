@@ -5,7 +5,7 @@ export function defaultHomeForRole(role: UserRole): string {
     case "WORKER":
       return "/worker/profile";
     case "EMPLOYER":
-      return "/employer/browse";
+      return "/employer/postings";
     case "ADMIN":
       return "/admin";
     default:
