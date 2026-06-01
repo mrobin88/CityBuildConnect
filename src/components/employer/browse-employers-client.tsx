@@ -119,7 +119,7 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
             <div className="stat">
               <div className="statLabel">Avg hours logged</div>
               <div className="statValue">{stats.avgHours.toLocaleString()}</div>
-              <div className="statDelta">Across roster</div>
+              <div className="statDelta">Across directory</div>
             </div>
           </div>
 
@@ -187,17 +187,20 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
               <span className="muted">{filtered.length} results</span>
             </div>
             <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-              <input
-                ref={searchRef}
-                type="search"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setVisibleCount(PAGE_SIZE);
-                }}
-                placeholder="Search by name, trade, or cert..."
-                className="inputField"
-              />
+              <label className="portfolioLabel">
+                Search
+                <input
+                  ref={searchRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setVisibleCount(PAGE_SIZE);
+                  }}
+                  placeholder="Name, trade, or certification"
+                  className="inputField"
+                />
+              </label>
             </div>
             {filtered.length === 0 ? (
               <div className="cardBody muted">No workers match this trade yet. Try widening filters to find more people ready to jump in.</div>

@@ -42,9 +42,6 @@ export function MessagesInbox({ basePath }: Props) {
 
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState("");
-  const [busyMessageId, setBusyMessageId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -141,69 +138,6 @@ export function MessagesInbox({ basePath }: Props) {
     }
   };
 
-  const startEdit = (m: ThreadMessage) => {
-    setEditingMessageId(m.id);
-    setEditDraft(m.body);
-    setThreadError(null);
-  };
-
-  const cancelEdit = () => {
-    setEditingMessageId(null);
-    setEditDraft("");
-  };
-
-  const onSaveEdit = async (messageId: string) => {
-    const text = editDraft.trim();
-    if (!text) {
-      setThreadError("Message cannot be empty.");
-      return;
-    }
-    setBusyMessageId(messageId);
-    setThreadError(null);
-    try {
-      const res = await fetch(`/api/messages/item/${encodeURIComponent(messageId)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: text }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setThreadError((data as { error?: string }).error ?? "Could not edit message.");
-        return;
-      }
-      cancelEdit();
-      await loadThread(peerId);
-      await loadConversations();
-    } catch {
-      setThreadError("Network error.");
-    } finally {
-      setBusyMessageId(null);
-    }
-  };
-
-  const onUnsend = async (messageId: string) => {
-    if (!confirm("Unsend this message?")) return;
-    setBusyMessageId(messageId);
-    setThreadError(null);
-    try {
-      const res = await fetch(`/api/messages/item/${encodeURIComponent(messageId)}`, {
-        method: "DELETE",
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setThreadError((data as { error?: string }).error ?? "Could not unsend message.");
-        return;
-      }
-      if (editingMessageId === messageId) cancelEdit();
-      await loadThread(peerId);
-      await loadConversations();
-    } catch {
-      setThreadError("Network error.");
-    } finally {
-      setBusyMessageId(null);
-    }
-  };
-
   const sortedConversations = useMemo(() => {
     return [...conversations].sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
   }, [conversations]);
@@ -277,40 +211,7 @@ export function MessagesInbox({ basePath }: Props) {
                 {thread.map((m) => (
                   <div key={m.id} className={`msgRow ${m.fromMe ? "msgRowSent" : "msgRowRecv"}`}>
                     <div className={m.fromMe ? "msgBubble msgBubbleSent" : "msgBubble msgBubbleRecv"}>
-                      {editingMessageId === m.id ? (
-                        <div style={{ display: "grid", gap: 6 }}>
-                          <textarea
-                            className="msgTextarea"
-                            rows={3}
-                            value={editDraft}
-                            onChange={(e) => setEditDraft(e.target.value)}
-                            maxLength={8000}
-                            disabled={busyMessageId === m.id}
-                          />
-                          <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
-                            <button type="button" className="btnSecondary" onClick={cancelEdit} disabled={busyMessageId === m.id}>
-                              Cancel
-                            </button>
-                            <button type="button" className="btnPrimary" onClick={() => void onSaveEdit(m.id)} disabled={busyMessageId === m.id || !editDraft.trim()}>
-                              {busyMessageId === m.id ? "Saving…" : "Save"}
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="msgBubbleText">{renderMessageBody(m.body)}</div>
-                          {m.fromMe ? (
-                            <div className="msgBubbleActions">
-                              <button type="button" className="msgMiniBtn" onClick={() => startEdit(m)} disabled={busyMessageId === m.id}>
-                                Edit
-                              </button>
-                              <button type="button" className="msgMiniBtn" onClick={() => void onUnsend(m.id)} disabled={busyMessageId === m.id}>
-                                Unsend
-                              </button>
-                            </div>
-                          ) : null}
-                        </>
-                      )}
+                      <div className="msgBubbleText">{renderMessageBody(m.body)}</div>
                       <div className="msgBubbleMeta">{formatTime(m.createdAt)}</div>
                     </div>
                   </div>

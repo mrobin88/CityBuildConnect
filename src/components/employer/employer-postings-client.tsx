@@ -243,19 +243,69 @@ export function EmployerPostingsClient({ postings }: Props) {
             <div className="cardHeader">
               <span className="cardTitle">Create an opening</span>
             </div>
-            <form className="cardBody" onSubmit={createPosting} style={{ display: "grid", gap: 8 }}>
-              <input className="inputField" placeholder="Job title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-              <input className="inputField" placeholder="Trade (Electrical, Plumbing...)" value={trade} onChange={(e) => setTrade(e.target.value)} required />
-              <input className="inputField" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required />
-              <input className="inputField" type="number" min={1} value={openSlots} onChange={(e) => setOpenSlots(e.target.value)} required />
-              <input className="inputField" type="number" min={1} max={80} value={hoursPerWeek} onChange={(e) => setHoursPerWeek(e.target.value)} />
-              <textarea
-                className="inputField"
-                placeholder="Role details and requirements"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-              />
+            <form className="cardBody" onSubmit={createPosting} style={{ display: "grid", gap: 10 }}>
+              <label className="portfolioLabel">
+                Job title *
+                <input className="inputField" value={title} onChange={(e) => setTitle(e.target.value)} required disabled={createBusy} />
+              </label>
+              <label className="portfolioLabel">
+                Trade *
+                <input
+                  className="inputField"
+                  value={trade}
+                  onChange={(e) => setTrade(e.target.value)}
+                  placeholder="Electrical, Plumbing, Ironwork..."
+                  required
+                  disabled={createBusy}
+                />
+              </label>
+              <label className="portfolioLabel">
+                Location *
+                <input
+                  className="inputField"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="San Francisco, CA"
+                  required
+                  disabled={createBusy}
+                />
+              </label>
+              <div className="portfolioTwoCol">
+                <label className="portfolioLabel">
+                  Open slots *
+                  <input
+                    className="inputField"
+                    type="number"
+                    min={1}
+                    value={openSlots}
+                    onChange={(e) => setOpenSlots(e.target.value)}
+                    required
+                    disabled={createBusy}
+                  />
+                </label>
+                <label className="portfolioLabel">
+                  Hours per week
+                  <input
+                    className="inputField"
+                    type="number"
+                    min={1}
+                    max={80}
+                    value={hoursPerWeek}
+                    onChange={(e) => setHoursPerWeek(e.target.value)}
+                    disabled={createBusy}
+                  />
+                </label>
+              </div>
+              <label className="portfolioLabel">
+                Role details and requirements
+                <textarea
+                  className="inputField"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  disabled={createBusy}
+                />
+              </label>
               <button type="submit" className="btnPrimary" disabled={createBusy}>
                 {createBusy ? "Posting..." : "Post opening"}
               </button>

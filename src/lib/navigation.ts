@@ -12,7 +12,6 @@ const workerNav: NavSection[] = [
     heading: "Career",
     items: [
       { href: "/worker/profile", label: "Profile & cert wallet" },
-      { href: "/worker/hours", label: "Hours tracker" },
       { href: "/worker/jobs", label: "Browse openings" },
     ],
   },
@@ -35,11 +34,8 @@ const employerNav: NavSection[] = [
     items: [{ href: "/employer/messages", label: "Messages" }],
   },
   {
-    heading: "Manage",
-    items: [
-      { href: "/employer/hours", label: "Activity log" },
-      { href: "/employer/contracts", label: "Documents" },
-    ],
+    heading: "Compliance",
+    items: [{ href: "/employer/contracts", label: "Documents" }],
   },
   {
     heading: "Account",

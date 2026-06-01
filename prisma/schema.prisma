@@ -108,11 +108,10 @@ model WorkerProfile {
   profilePhoto   String?
 
   certifications     Certification[]
-  applications       Application[]         @relation("WorkerApplications")
+  applications       Application[]       @relation("WorkerApplications")
   hoursLogs          HoursLog[]
   jobSiteExperiences JobSiteExperience[]
   portfolioItems     PortfolioItem[]
-  rosterEntries      EmployerRosterEntry[]
 }
 
 /// Job sites / projects the worker has been on (resume-style).
@@ -176,28 +175,8 @@ model EmployerProfile {
   website       String?
   logo          String?
 
-  jobPostings   JobPosting[]
-  hoursLogs     HoursLog[]
-  rosterEntries EmployerRosterEntry[]
-}
-
-model EmployerRosterEntry {
-  id            String          @id @default(cuid())
-  employerId    String
-  employer      EmployerProfile @relation(fields: [employerId], references: [userId], onDelete: Cascade)
-  workerId      String
-  worker        WorkerProfile   @relation(fields: [workerId], references: [userId], onDelete: Cascade)
-  contactStatus String          @default("NEW")
-  tags          String[]        @default([])
-  privateNotes  String?         @db.Text
-  lastContactAt DateTime?
-  archived      Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  @@unique([employerId, workerId])
-  @@index([employerId, archived, updatedAt])
-  @@index([workerId])
+  jobPostings JobPosting[]
+  hoursLogs   HoursLog[]
 }
 
 model JobPosting {

@@ -74,51 +74,69 @@ export default function WorkerProfileSetupPage() {
               <span className="cardTitle">Profile details</span>
             </div>
             <form className="cardBody" onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-              <input
-                className="inputField"
-                placeholder="Trade (Electrical, Plumbing, Ironwork...)"
-                value={trade}
-                onChange={(e) => setTrade(e.target.value)}
-                required
-              />
-              <input
-                className="inputField"
-                type="number"
-                min={1}
-                max={8}
-                placeholder="Apprentice year (optional)"
-                value={apprenticeYear}
-                onChange={(e) => setApprenticeYear(e.target.value)}
-              />
-              <input
-                className="inputField"
-                placeholder="Union local (optional)"
-                value={unionLocal}
-                onChange={(e) => setUnionLocal(e.target.value)}
-              />
-              <input
-                className="inputField"
-                placeholder="City / location (optional)"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-              <label className="muted" style={{ display: "grid", gap: 4 }}>
+              <label className="portfolioLabel">
+                Trade *
+                <input
+                  className="inputField"
+                  value={trade}
+                  onChange={(e) => setTrade(e.target.value)}
+                  placeholder="Electrical, Plumbing, Ironwork..."
+                  required
+                  disabled={saving}
+                />
+              </label>
+              <label className="portfolioLabel">
+                Apprentice year
+                <input
+                  className="inputField"
+                  type="number"
+                  min={1}
+                  max={8}
+                  value={apprenticeYear}
+                  onChange={(e) => setApprenticeYear(e.target.value)}
+                  disabled={saving}
+                />
+              </label>
+              <label className="portfolioLabel">
+                Union local
+                <input
+                  className="inputField"
+                  value={unionLocal}
+                  onChange={(e) => setUnionLocal(e.target.value)}
+                  disabled={saving}
+                />
+              </label>
+              <label className="portfolioLabel">
+                City / location
+                <input
+                  className="inputField"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="San Francisco, CA"
+                  disabled={saving}
+                />
+              </label>
+              <label className="portfolioLabel">
                 Available from
                 <input
                   className="inputField"
                   type="date"
                   value={availableFrom}
                   onChange={(e) => setAvailableFrom(e.target.value)}
+                  disabled={saving}
                 />
               </label>
-              <textarea
-                className="inputField"
-                rows={5}
-                placeholder="Short bio and work goals (optional)"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-              />
-              <label className="muted" style={{ display: "grid", gap: 4 }}>
+              <label className="portfolioLabel">
+                Short bio and work goals
+                <textarea
+                  className="inputField"
+                  rows={5}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  disabled={saving}
+                />
+              </label>
+              <label className="portfolioLabel">
                 Profile photo
                 <input
                   className="inputField"
@@ -127,7 +145,9 @@ export default function WorkerProfileSetupPage() {
                   onChange={(e) => setProfileImageFile(e.target.files?.[0] ?? null)}
                   disabled={saving}
                 />
-                <span style={{ fontSize: 12 }}>JPEG, PNG, or WebP up to 6 MB.</span>
+                <span className="muted" style={{ fontSize: 12 }}>
+                  JPEG, PNG, or WebP up to 6 MB.
+                </span>
               </label>
               <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} disabled={saving} />

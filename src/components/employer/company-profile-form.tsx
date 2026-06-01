@@ -134,7 +134,8 @@ export function CompanyProfileForm({ initial }: Props) {
 
   return (
     <form className="cardBody" onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-      <fieldset style={{ border: 0, padding: 0, margin: 0, display: "grid", gap: 8 }}>
+      <label className="portfolioLabel">
+        Find company
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
             className="inputField"
@@ -142,14 +143,14 @@ export function CompanyProfileForm({ initial }: Props) {
             type="search"
             value={lookupInput}
             onChange={(e) => setLookupInput(e.target.value)}
-            placeholder="Search by website, domain, or email"
+            placeholder="Website, domain, or email"
             disabled={saving || lookupBusy}
           />
           <button type="button" className="btnSecondary" onClick={() => void runCompanyLookup()} disabled={saving || lookupBusy}>
             {lookupBusy ? "Finding..." : "Autofill"}
           </button>
         </div>
-      </fieldset>
+      </label>
 
       <label className="portfolioLabel">
         Organization name *

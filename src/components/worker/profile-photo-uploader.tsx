@@ -51,19 +51,20 @@ export function ProfilePhotoUploader({ currentPhoto, workerId }: Props) {
 
   return (
     <div style={{ display: "grid", gap: 8 }}>
-      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={src}
-            alt="Profile photo"
-            style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)" }}
-          />
-        ) : (
-          <span className="muted" style={{ fontSize: 12 }}>
-            No profile photo
-          </span>
-        )}
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt="Profile photo"
+          style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-border-tertiary)" }}
+        />
+      ) : (
+        <span className="muted" style={{ fontSize: 12 }}>
+          No profile photo
+        </span>
+      )}
+      <label className="portfolioLabel">
+        Choose photo
         <input
           className="inputField"
           type="file"
@@ -71,10 +72,10 @@ export function ProfilePhotoUploader({ currentPhoto, workerId }: Props) {
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           disabled={uploading}
         />
-        <button type="button" className="btnSecondary" onClick={() => void onUpload()} disabled={!file || uploading}>
-          {uploading ? "Uploading..." : "Upload photo"}
-        </button>
-      </div>
+      </label>
+      <button type="button" className="btnSecondary" onClick={() => void onUpload()} disabled={!file || uploading} style={{ width: "fit-content" }}>
+        {uploading ? "Uploading..." : "Upload photo"}
+      </button>
       <div className="muted" style={{ fontSize: 12 }}>
         JPEG, PNG, or WebP up to 6 MB.
       </div>

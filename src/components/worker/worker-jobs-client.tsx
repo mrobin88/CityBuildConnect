@@ -103,16 +103,19 @@ export function WorkerJobsClient({ jobs }: Props) {
               <span className="muted">{filtered.length} openings</span>
             </div>
             <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-              <input
-                className="inputField"
-                type="search"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setVisibleCount(PAGE_SIZE);
-                }}
-                placeholder="Search by trade, company, or location..."
-              />
+              <label className="portfolioLabel">
+                Search
+                <input
+                  className="inputField"
+                  type="search"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setVisibleCount(PAGE_SIZE);
+                  }}
+                  placeholder="Trade, company, or location"
+                />
+              </label>
             </div>
             {error ? (
               <div className="cardBody" style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>

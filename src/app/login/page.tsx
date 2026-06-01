@@ -210,14 +210,17 @@ export default function LoginPage() {
             ) : null}
             {emailAvailable ? (
               <form onSubmit={handleMagicLinkSignIn} className="authForm">
-                <input
-                  type="email"
-                  value={magicEmail}
-                  onChange={(e) => setMagicEmail(e.target.value)}
-                  placeholder="you@company.org"
-                  required
-                  className="inputField"
-                />
+                <label className="authLabel">
+                  <span>Email for sign-in link</span>
+                  <input
+                    type="email"
+                    value={magicEmail}
+                    onChange={(e) => setMagicEmail(e.target.value)}
+                    placeholder="you@company.org"
+                    required
+                    className="inputField"
+                  />
+                </label>
                 <button type="submit" className="btnSecondary" disabled={magicLoading} style={{ width: "100%" }}>
                   {magicLoading ? "Sending link…" : "Continue with email link"}
                 </button>
