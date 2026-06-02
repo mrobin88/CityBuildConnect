@@ -39,6 +39,7 @@ export function MessagesInbox({ basePath }: Props) {
   const [thread, setThread] = useState<ThreadMessage[]>([]);
   const [loadingThread, setLoadingThread] = useState(false);
   const [threadError, setThreadError] = useState<string | null>(null);
+  const [lockedReason, setLockedReason] = useState<string | null>(null);
 
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);

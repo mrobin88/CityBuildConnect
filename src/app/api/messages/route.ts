@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canExchangeDirectMessages } from "@/lib/message-policy";
+import { canSendDirectMessage } from "@/lib/message-policy";
 import { notifyNewDirectMessageSms } from "@/lib/twilio-notify";
 
 export const dynamic = "force-dynamic";
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
   if (
     !peer ||
-    !(await canExchangeDirectMessages(prisma, session.user.id, myRole, peer.id, peer.role))
+    !(await canSendDirectMessage(prisma, session.user.id, myRole, peer.id, peer.role))
   ) {
     return NextResponse.json({ error: "Cannot message this user" }, { status: 403 });
   }

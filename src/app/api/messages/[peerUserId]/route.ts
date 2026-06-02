@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canExchangeDirectMessages } from "@/lib/message-policy";
+import { canExchangeDirectMessagesByRole, canSendDirectMessage } from "@/lib/message-policy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,8 +34,20 @@ export async function GET(_req: Request, { params }: Ctx) {
     },
   });
 
-  if (!peer || !(await canExchangeDirectMessages(prisma, me, myRole, peer.id, peer.role))) {
+  if (!peer || !canExchangeDirectMessagesByRole(myRole, peer.role)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const peerName =
+    peer.employerProfile?.companyName ?? peer.name ?? peer.workerProfile?.trade ?? "User";
+
+  if (!(await canSendDirectMessage(prisma, me, myRole, peer.id, peer.role))) {
+    return NextResponse.json({
+      peer: { id: peer.id, name: peerName, role: peer.role },
+      locked: true,
+      reason: "Messaging opens once you and this person have both shown interest.",
+      messages: [],
+    });
   }
 
   await prisma.message.updateMany({
@@ -62,11 +74,9 @@ export async function GET(_req: Request, { params }: Ctx) {
     },
   });
 
-  const peerName =
-    peer.employerProfile?.companyName ?? peer.name ?? peer.workerProfile?.trade ?? "User";
-
   return NextResponse.json({
     peer: { id: peer.id, name: peerName, role: peer.role },
+    locked: false,
     messages: messages.map((m) => ({
       id: m.id,
       fromMe: m.fromId === me,

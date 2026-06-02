@@ -6,24 +6,25 @@ export function canExchangeDirectMessagesByRole(a: UserRole, b: UserRole): boole
   return (a === "WORKER" && b === "EMPLOYER") || (a === "EMPLOYER" && b === "WORKER");
 }
 
-const MESSAGE_UNLOCK_STATUSES: ApplicationStatus[] = ["INTERESTED", "INTERVIEW", "OFFER", "HIRED"];
+/** An application advanced to one of these statuses counts as mutual interest. */
+export const MESSAGE_UNLOCK_STATUSES: ApplicationStatus[] = [
+  "INTERESTED",
+  "INTERVIEW",
+  "OFFER",
+  "HIRED",
+];
 
 /**
- * Messaging is unlocked only after employer shows positive intent.
- * This prevents cold-message spam from either side.
+ * The single definition of a "match": the worker applied (showed interest) and
+ * the employer advanced that application past "Pass" (showed interest back).
+ * Messaging — on both sides — is only available once this is true.
  */
-export async function canExchangeDirectMessages(
+export async function employerWorkerMatched(
   prisma: PrismaClient,
-  aUserId: string,
-  aRole: UserRole,
-  bUserId: string,
-  bRole: UserRole
+  employerId: string,
+  workerId: string,
 ): Promise<boolean> {
-  if (!canExchangeDirectMessagesByRole(aRole, bRole)) return false;
-
-  const workerId = aRole === "WORKER" ? aUserId : bUserId;
-  const employerId = aRole === "EMPLOYER" ? aUserId : bUserId;
-  const unlocked = await prisma.application.findFirst({
+  const match = await prisma.application.findFirst({
     where: {
       workerId,
       status: { in: MESSAGE_UNLOCK_STATUSES },
@@ -31,5 +32,22 @@ export async function canExchangeDirectMessages(
     },
     select: { id: true },
   });
-  return Boolean(unlocked);
+  return Boolean(match);
+}
+
+/**
+ * Whether `actor` may view or send messages with `peer`. Requires a valid
+ * worker/employer pairing and a match between them.
+ */
+export async function canSendDirectMessage(
+  prisma: PrismaClient,
+  actorId: string,
+  actorRole: UserRole,
+  peerId: string,
+  peerRole: UserRole,
+): Promise<boolean> {
+  if (!canExchangeDirectMessagesByRole(actorRole, peerRole)) return false;
+  const employerId = actorRole === "EMPLOYER" ? actorId : peerId;
+  const workerId = actorRole === "WORKER" ? actorId : peerId;
+  return employerWorkerMatched(prisma, employerId, workerId);
 }

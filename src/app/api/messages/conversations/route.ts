@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canExchangeDirectMessages } from "@/lib/message-policy";
+import { canSendDirectMessage } from "@/lib/message-policy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -65,7 +65,7 @@ export async function GET() {
     const peerId = m.fromId === me ? m.toId : m.fromId;
     if (seen.has(peerId)) continue;
     const peer = m.fromId === me ? m.to : m.from;
-    if (!(await canExchangeDirectMessages(prisma, me, myRole, peer.id, peer.role))) continue;
+    if (!(await canSendDirectMessage(prisma, me, myRole, peer.id, peer.role))) continue;
     seen.add(peerId);
 
     const unreadCount = await prisma.message.count({

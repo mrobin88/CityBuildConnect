@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { certExpiryStatus } from "@/lib/cert-status";
 import { defaultHomeForRole } from "@/lib/routes";
+import { MESSAGE_UNLOCK_STATUSES } from "@/lib/message-policy";
 import {
   BrowseEmployersClient,
   type BrowseJobRow,
@@ -18,7 +19,7 @@ export default async function EmployerBrowsePage() {
   if (!session?.user) redirect("/login");
   if (session.user.role !== "EMPLOYER") redirect(defaultHomeForRole(session.user.role));
 
-  const [workersRaw, jobsRaw, placementsYtd, hoursAgg] = await Promise.all([
+  const [workersRaw, jobsRaw, placementsYtd, hoursAgg, matchedApps] = await Promise.all([
     prisma.workerProfile.findMany({
       where: { isPublic: true },
       include: {
@@ -39,7 +40,16 @@ export default async function EmployerBrowsePage() {
       where: { status: "HIRED", createdAt: { gte: new Date(new Date().getFullYear(), 0, 1) } },
     }),
     prisma.workerProfile.aggregate({ _avg: { totalHours: true } }),
+    prisma.application.findMany({
+      where: {
+        status: { in: MESSAGE_UNLOCK_STATUSES },
+        jobPosting: { employerId: session.user.id },
+      },
+      select: { workerId: true },
+    }),
   ]);
+
+  const matchedWorkerIds = [...new Set(matchedApps.map((a) => a.workerId))];
 
   const workers: BrowseWorkerRow[] = workersRaw.map((w) => ({
     userId: w.userId,
@@ -103,6 +113,7 @@ export default async function EmployerBrowsePage() {
       jobs={jobs}
       stats={stats}
       certPreview={certPreview}
+      matchedWorkerIds={matchedWorkerIds}
     />
   );
 }

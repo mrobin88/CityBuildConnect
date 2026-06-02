@@ -36,7 +36,10 @@ type Props = {
   jobs: BrowseJobRow[];
   stats: BrowseStats;
   certPreview: { name: string; expiryLabel: string; status: "green" | "amber" }[];
+  matchedWorkerIds: string[];
 };
+
+const MESSAGE_LOCKED_HINT = "Available once this worker applies and you mark them Interested";
 
 const AVATAR_CLASS = ["avBlue", "avTeal", "avAmber", "avPurple"] as const;
 const PAGE_SIZE = 12;
@@ -54,12 +57,13 @@ function workerPhotoSrc(profilePhoto: string | null, userId: string): string | n
   return `/api/worker/profile/${encodeURIComponent(userId)}/photo`;
 }
 
-export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Props) {
+export function BrowseEmployersClient({ workers, jobs, stats, certPreview, matchedWorkerIds }: Props) {
   const router = useRouter();
   const [trade, setTrade] = useState("All trades");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const searchRef = useRef<HTMLInputElement>(null);
+  const matchedSet = useMemo(() => new Set(matchedWorkerIds), [matchedWorkerIds]);
 
   const filtered = useMemo(() => {
     const lower = query.trim().toLowerCase();
@@ -162,13 +166,25 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexShrink: 0, flexWrap: "wrap" }}>
-                  <Link
-                    href={`/employer/messages?with=${encodeURIComponent(featuredWorker.userId)}`}
-                    className="btnSecondary"
-                    style={{ fontSize: 12, padding: "7px 12px", textDecoration: "none", textAlign: "center" }}
-                  >
-                    Message
-                  </Link>
+                  {matchedSet.has(featuredWorker.userId) ? (
+                    <Link
+                      href={`/employer/messages?with=${encodeURIComponent(featuredWorker.userId)}`}
+                      className="btnSecondary"
+                      style={{ fontSize: 12, padding: "7px 12px", textDecoration: "none", textAlign: "center" }}
+                    >
+                      Message
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btnSecondary"
+                      style={{ fontSize: 12, padding: "7px 12px" }}
+                      disabled
+                      title={MESSAGE_LOCKED_HINT}
+                    >
+                      Message
+                    </button>
+                  )}
                   <Link
                     href={`/profiles/${encodeURIComponent(featuredWorker.userId)}`}
                     className="btnSecondary"
@@ -257,14 +273,27 @@ export function BrowseEmployersClient({ workers, jobs, stats, certPreview }: Pro
                       <div className="hoursNum">{w.totalHours.toLocaleString()}</div>
                       <div>hrs logged</div>
                     </div>
-                    <Link
-                      href={`/employer/messages?with=${encodeURIComponent(w.userId)}`}
-                      className="btnSecondary"
-                      style={{ fontSize: 11, padding: "5px 10px", textDecoration: "none", textAlign: "center" }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Message
-                    </Link>
+                    {matchedSet.has(w.userId) ? (
+                      <Link
+                        href={`/employer/messages?with=${encodeURIComponent(w.userId)}`}
+                        className="btnSecondary"
+                        style={{ fontSize: 11, padding: "5px 10px", textDecoration: "none", textAlign: "center" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Message
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btnSecondary"
+                        style={{ fontSize: 11, padding: "5px 10px" }}
+                        disabled
+                        title={MESSAGE_LOCKED_HINT}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Message
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
