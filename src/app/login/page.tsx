@@ -162,9 +162,14 @@ export default function LoginPage() {
             <button type="submit" className="btnPrimary" disabled={loading}>
               {loading ? "Signing in…" : "Continue"}
             </button>
-            <p className="muted" style={{ fontSize: 12, margin: 0 }}>
-              No account? <Link href="/signup">Create one</Link>
-            </p>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <p className="muted" style={{ fontSize: 12, margin: 0 }}>
+                No account? <Link href="/signup">Create one</Link>
+              </p>
+              <p className="muted" style={{ fontSize: 12, margin: 0 }}>
+                <Link href="/forgot-password">Forgot password?</Link>
+              </p>
+            </div>
           </form>
         ) : null}
 

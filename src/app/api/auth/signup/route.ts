@@ -3,6 +3,7 @@ import type { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
 import { inferEmployerBootstrapFromEmail } from "@/lib/company-enrichment";
+import { sendVerificationEmail } from "@/lib/email-verification";
 
 const allowedRoles = new Set<UserRole>(["WORKER", "EMPLOYER"]);
 
@@ -47,6 +48,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "An account already exists for this email." }, { status: 409 });
       }
 
+      const alreadyVerified = Boolean(existing.emailVerified);
+
       await prisma.account.create({
         data: {
           userId: existing.id,
@@ -77,6 +80,10 @@ export async function POST(req: Request) {
             projectTypes: [],
           },
         });
+      }
+
+      if (!alreadyVerified) {
+        await sendVerificationEmail(email, fullName);
       }
 
       return NextResponse.json({ ok: true });
@@ -110,6 +117,8 @@ export async function POST(req: Request) {
             : undefined,
       },
     });
+
+    await sendVerificationEmail(email, fullName);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

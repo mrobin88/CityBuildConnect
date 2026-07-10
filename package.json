@@ -14,7 +14,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:init": "npm run db:up && prisma db push && prisma db seed"
+    "db:init": "npm run db:up && prisma db push && prisma db seed",
+    "email:test": "tsx scripts/send-test-email.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

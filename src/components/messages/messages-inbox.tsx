@@ -71,9 +71,11 @@ export function MessagesInbox({ basePath }: Props) {
     if (!id) {
       setThread([]);
       setPeerName("");
+      setLockedReason(null);
       return;
     }
     setThreadError(null);
+    setLockedReason(null);
     setLoadingThread(true);
     try {
       const res = await fetch(`/api/messages/${encodeURIComponent(id)}`, { cache: "no-store" });
@@ -84,9 +86,15 @@ export function MessagesInbox({ basePath }: Props) {
         setPeerName("");
         return;
       }
-      const d = data as { peer: { name: string }; messages: ThreadMessage[] };
+      const d = data as {
+        peer: { name: string };
+        messages: ThreadMessage[];
+        locked?: boolean;
+        reason?: string;
+      };
       setPeerName(d.peer?.name ?? "User");
       setThread(d.messages ?? []);
+      setLockedReason(d.locked ? d.reason ?? "Messaging isn't available yet." : null);
     } catch {
       setThreadError("Network error.");
       setThread([]);
@@ -208,31 +216,39 @@ export function MessagesInbox({ basePath }: Props) {
               </div>
               {loadingThread ? <div className="muted msgPad">Loading thread…</div> : null}
               {threadError ? <div className="msgPad" style={{ color: "#b91c1c", fontSize: 12 }}>{threadError}</div> : null}
-              <div className="msgBubbleList">
-                {thread.map((m) => (
-                  <div key={m.id} className={`msgRow ${m.fromMe ? "msgRowSent" : "msgRowRecv"}`}>
-                    <div className={m.fromMe ? "msgBubble msgBubbleSent" : "msgBubble msgBubbleRecv"}>
-                      <div className="msgBubbleText">{renderMessageBody(m.body)}</div>
-                      <div className="msgBubbleMeta">{formatTime(m.createdAt)}</div>
-                    </div>
+              {lockedReason ? (
+                <div className="muted msgPad" style={{ marginTop: 16, lineHeight: 1.5 }}>
+                  {lockedReason}
+                </div>
+              ) : (
+                <>
+                  <div className="msgBubbleList">
+                    {thread.map((m) => (
+                      <div key={m.id} className={`msgRow ${m.fromMe ? "msgRowSent" : "msgRowRecv"}`}>
+                        <div className={m.fromMe ? "msgBubble msgBubbleSent" : "msgBubble msgBubbleRecv"}>
+                          <div className="msgBubbleText">{renderMessageBody(m.body)}</div>
+                          <div className="msgBubbleMeta">{formatTime(m.createdAt)}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={bottomRef} />
                   </div>
-                ))}
-                <div ref={bottomRef} />
-              </div>
-              <form className="msgComposer" onSubmit={onSend}>
-                <textarea
-                  className="msgTextarea"
-                  rows={3}
-                  placeholder="Write a message…"
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  disabled={sending}
-                  maxLength={8000}
-                />
-                <button type="submit" className="btnPrimary" disabled={sending || !draft.trim()}>
-                  {sending ? "Sending…" : "Send"}
-                </button>
-              </form>
+                  <form className="msgComposer" onSubmit={onSend}>
+                    <textarea
+                      className="msgTextarea"
+                      rows={3}
+                      placeholder="Write a message…"
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      disabled={sending}
+                      maxLength={8000}
+                    />
+                    <button type="submit" className="btnPrimary" disabled={sending || !draft.trim()}>
+                      {sending ? "Sending…" : "Send"}
+                    </button>
+                  </form>
+                </>
+              )}
             </>
           )}
         </section>

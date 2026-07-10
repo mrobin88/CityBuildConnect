@@ -127,6 +127,12 @@ a {
   transform: translateY(-1px);
 }
 
+.btnSecondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btnSecondaryActive {
   background: #1b2128;
   border-color: #1b2128;
